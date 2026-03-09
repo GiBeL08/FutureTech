@@ -29,8 +29,8 @@ export default function Header() {
             href={link.href}
             className={`px-6 py-3 rounded-[10px] text-lg transition-all duration-200 ${
               isActive
-                ? 'bg-[#141414] text-white border border-[#333]' // Обводка ТОЛЬКО тут
-                : 'text-[#7E7E81] hover:text-white border border-transparent' // У остальных бордера нет
+                ? 'bg-[#141414] text-white border border-[#333]' 
+                : 'text-[#7E7E81] hover:text-white border border-transparent' 
             }`}
           >
             {link.name}
