@@ -1,6 +1,7 @@
 import "./globals.css";
 import Header from "./components/Header";
 import TopBar from "./components/TopBar";
+import Footer from './components/Footer'; 
 
 export default function RootLayout({
   children,
@@ -10,17 +11,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-
-      
         <div>
 
           <TopBar />
 
-        <Header />
+          <Header />
 
-        <main className="p-6">
-          {children}
-        </main>
+          <main className="p-6">
+            {children}
+          </main>
+          <Footer /> 
         </div>
 
       </body>
