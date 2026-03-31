@@ -1,5 +1,10 @@
+import { div } from 'framer-motion/client';
+import Hero from './components/Hero';
+
 export default function Home() {
   return (
-    <h1 className="text-3xl font-bold">Home page</h1>
+    <div className='bg-black'>
+      <Hero />
+    </div>
   );
 }
