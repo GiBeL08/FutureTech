@@ -9,7 +9,7 @@ export default function TopBar() {
       <div className="max-w-[1920px] mx-auto flex items-center justify-center gap-2 group cursor-pointer py-3 md:py-5 px-4">
         
         <p className="text-[#98989A] text-[12px] sm:text-sm md:text-base font-light transition-colors group-hover:text-white text-center">
-          Subscribe to our Newsletter For Blogs and Resources
+          Subscribe to our Newsletter For New & latest Blogs and Resources
         </p>
 
         {/* Стрелочка, чуть меньше на мобилке */}
