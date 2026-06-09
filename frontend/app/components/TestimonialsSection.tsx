@@ -21,13 +21,17 @@ function StarIcon() {
   );
 }
 
-export default function TestimonialsSection() {
+type Props = {
+  testimonials: Testimonial[];
+};
+
+export default function TestimonialsSection({ testimonials: initialTestimonials }: Props) {
   const fadeInUp = {
     hidden: { opacity: 0, y: 35 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.7 } }
   };
 
-  const testimonials: Testimonial[] = [
+  const hardcodedTestimonials: Testimonial[] = [
     {
       id: 1,
       name: 'Sarah Thompson',
@@ -77,6 +81,8 @@ export default function TestimonialsSection() {
       text: 'Highly recommended for anyone looking to stay ahead of the curve. The newsletter is pure gold and full of actionable updates.'
     }
   ];
+
+  const testimonials = initialTestimonials && initialTestimonials.length > 0 ? initialTestimonials : hardcodedTestimonials;
 
   return (
     <section className="bg-[#141414] text-white border-b border-[#262626]">
@@ -140,7 +146,7 @@ export default function TestimonialsSection() {
 
                   {/* Текст отзыва */}
                   <p className="text-[#98989A] text-sm lg:text-[15px] font-light leading-relaxed group-hover:text-white transition-colors duration-300">
-                    "{test.text}"
+                    &quot;{test.text}&quot;
                   </p>
                 </div>
               </motion.div>

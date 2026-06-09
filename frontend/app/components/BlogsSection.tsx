@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpRight, Heart, Eye } from 'lucide-react';
@@ -23,7 +24,11 @@ interface Blog {
   tags: string[];
 }
 
-export default function BlogsSection() {
+type Props = {
+  initialBlogs: Blog[];
+};
+
+export default function BlogsSection({ initialBlogs }: Props) {
   const [activeTab, setActiveTab] = useState('All');
 
   // Категории для табов-фильтров
@@ -37,7 +42,7 @@ export default function BlogsSection() {
   ];
 
   // Массив блогов
-  const blogsData: Blog[] = [
+  const hardcodedBlogs: Blog[] = [
     {
       id: 1,
       category: 'Artificial Intelligence',
@@ -110,6 +115,8 @@ export default function BlogsSection() {
     }
   ];
 
+  const blogsData = initialBlogs && initialBlogs.length > 0 ? initialBlogs : hardcodedBlogs;
+
   // Фильтруем блоги на основе активного таба
   const filteredBlogs = activeTab === 'All' 
     ? blogsData.slice(0, 3) // На "All" показываем первые 3 для аккуратности макета
@@ -128,7 +135,7 @@ export default function BlogsSection() {
               </span>
             </div>
             <h2 className="text-[32px] sm:text-[42px] lg:text-[48px] font-semibold text-white tracking-tight leading-tight">
-              Explore FutureTech's
+              Explore FutureTech&apos;s
               <br />
               In-Depth Blog Posts
             </h2>
@@ -231,10 +238,16 @@ export default function BlogsSection() {
 
                   {/* Правая колонка: Кнопка Читать */}
                   <div className="flex-shrink-0 w-full lg:w-auto flex justify-end lg:block">
-                    <button className="inline-flex items-center gap-3 bg-[#141414] border border-[#262626] px-5 py-3.5 rounded-[10px] text-[#98989A] transition-all duration-300 hover:bg-[#1A1A1A] hover:text-white hover:border-[#3a3a3a] cursor-pointer group w-full lg:w-auto justify-center">
-                      <span className="text-sm font-medium">Read Blog</span>
-                      <ArrowUpRight size={18} className="text-[#FFD11A] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                    </button>
+                    <Link
+  href={`/blogs/${blog.id}`}
+  className="inline-flex items-center gap-3 bg-[#141414] border border-[#262626] px-5 py-3.5 rounded-[10px] text-[#98989A] transition-all duration-300 hover:bg-[#1A1A1A] hover:text-white hover:border-[#3a3a3a] cursor-pointer group w-full lg:w-auto justify-center"
+>
+  <span className="text-sm font-medium">Read Blog</span>
+  <ArrowUpRight
+    size={18}
+    className="text-[#FFD11A] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
+  />
+</Link>
                   </div>
 
                 </motion.div>

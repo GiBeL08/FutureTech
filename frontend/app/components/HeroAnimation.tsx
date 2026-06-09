@@ -1,47 +1,45 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useMemo, useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function HeroAnimation() {
-  // rays — безопасны (без random)
-  const rays = useMemo(
-    () =>
-      Array.from({ length: 120 }, (_, i) => ({
-        id: i,
-        rotate: i * 0.92,
-        opacityDelay: i * 0.03,
-      })),
-    []
-  );
+  const rand = (seed: number) => {
+    const x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+  };
 
-  // particles — теперь через state
-  const [particles, setParticles] = useState<
-    {
-      id: number;
-      x: number;
-      y: number;
-      size: number;
-      duration: number;
-    }[]
-  >([]);
+  const [rays, setRays] = useState<any[]>([]);
+  const [particles, setParticles] = useState<any[]>([]);
 
   useEffect(() => {
-    const generated = Array.from({ length: 54 }, (_, i) => {
+    // Rays (можно оставить как есть, но перенесём для надёжности)
+    const generatedRays = Array.from({ length: 120 }, (_, i) => ({
+      id: i,
+      rotate: i * 0.92,
+      opacityDelay: i * 0.03,
+    }));
+
+    // Particles
+    const generatedParticles = Array.from({ length: 54 }, (_, i) => {
       const angle = i * (Math.PI / 42);
-      const distance = 70 + Math.random() * 280;
+      const distance = 70 + rand(i + 1) * 280;
 
       return {
         id: i,
         x: Math.cos(angle) * distance,
         y: Math.sin(angle) * distance,
-        size: 1.6 + Math.random() * 2.2,
-        duration: 3 + Math.random() * 3,
+        size: 1.6 + rand(i + 2) * 2.2,
+        duration: 3 + rand(i + 3) * 3,
       };
     });
 
-    setParticles(generated);
+    setRays(generatedRays);
+    setParticles(generatedParticles);
   }, []);
+
+  // 👉 важно: не рендерим пока нет данных
+  if (particles.length === 0) return null;
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none bg-[#0D0E11]">

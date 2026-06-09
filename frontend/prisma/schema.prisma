@@ -1,0 +1,154 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model SiteStat {
+  id    Int    @id @default(autoincrement())
+  value String
+  label String
+  page  String @default("home")
+  sort  Int    @default(0)
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  firstName String
+  lastName  String
+  email     String
+  phone     String?
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model BlogPost {
+  id            Int     @id @default(autoincrement())
+  slug          String  @unique
+  title         String
+  heroImage     String
+  category      String
+  publishedDate String
+  readingTime   String
+  authorName    String
+  authorRole    String?
+  authorAvatar  String?
+  likes         String
+  views         String
+  shares        String  @default("0")
+  introduction  String
+  sections      String
+  relatedTopics String
+  desc          String?
+  listImage     String?
+  tags          String?
+  sort          Int     @default(0)
+}
+
+model NewsArticle {
+  id           Int     @id @default(autoincrement())
+  slug         String? @unique
+  title        String
+  desc         String
+  category     String
+  image        String?
+  date         String
+  readTime     String?
+  authorName   String
+  authorAvatar String?
+  featured     Boolean @default(false)
+  headline     Boolean @default(false)
+  sort         Int     @default(0)
+}
+
+model Video {
+  id       Int    @id @default(autoincrement())
+  title    String
+  category String
+  image    String
+  duration String
+  desc     String?
+  sort     Int    @default(0)
+}
+
+model PodcastShow {
+  id        Int    @id @default(autoincrement())
+  title     String
+  subtitle  String
+  rating    Int
+  episodes  String
+  followers String
+  icon      String
+  sort      Int    @default(0)
+}
+
+model PodcastEpisode {
+  id        Int     @id @default(autoincrement())
+  showName  String
+  title     String
+  desc      String?
+  image     String
+  category  String?
+  duration  String
+  date      String
+  featured  Boolean @default(false)
+  tags      String?
+  rating    Float?
+  sort      Int     @default(0)
+}
+
+model ResourceHighlight {
+  id       Int    @id @default(autoincrement())
+  title    String
+  subtitle String
+  desc     String
+  sort     Int    @default(0)
+}
+
+model Resource {
+  id       Int     @id @default(autoincrement())
+  tab      String
+  title    String
+  subtitle String
+  desc     String?
+  image    String?
+  meta     String?
+  featured Boolean @default(false)
+  sort     Int     @default(0)
+}
+
+model Testimonial {
+  id     Int    @id @default(autoincrement())
+  name   String
+  role   String
+  avatar String
+  rating Int
+  text   String
+  sort   Int    @default(0)
+}
+
+model Faq {
+  id   Int    @id @default(autoincrement())
+  q    String
+  a    String
+  sort Int    @default(0)
+}
+
+model SimilarNewsItem {
+  id       Int    @id @default(autoincrement())
+  title    String
+  category String
+  image    String
+  likes    String
+  views    String
+  sort     Int    @default(0)
+}

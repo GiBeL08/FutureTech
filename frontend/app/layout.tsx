@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import TopBar from "./components/TopBar";
 import Footer from './components/Footer'; 
 
+
 export const metadata = {
   title: "FutureTech AI",
   description: "Explore the Frontiers of Artificial Intelligence",

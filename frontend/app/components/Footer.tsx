@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Twitter, Linkedin, Github, ArrowUpRight } from 'lucide-react';
+import { defaultBlogSlug, getBlogHref } from '../lib/blogs';
 
 // Описываем типы для порядка
 type FooterSection = {
@@ -43,9 +44,17 @@ export default function Footer() {
             <div key={section.title}>
               <h4 className="text-lg font-semibold mb-6">{section.title}</h4>
               <ul className="space-y-4">
-                {section.links.map((link) => (
+                {section.links.map((link) => {
+                  const href =
+                    section.title === 'Blogs'
+                      ? getBlogHref(link)
+                      : link === 'Blogs'
+                        ? `/blogs/${defaultBlogSlug}`
+                        : '#';
+
+                  return (
                   <li key={link} className="flex items-center gap-2">
-                    <Link href="#" className="text-[#7E7E81] hover:text-white transition-colors text-sm lg:text-base">
+                    <Link href={href} className="text-[#7E7E81] hover:text-white transition-colors text-sm lg:text-base">
                       {link}
                     </Link>
                     {/* Теперь без as any, всё чисто */}
@@ -55,7 +64,8 @@ export default function Footer() {
                       </span>
                     )}
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             </div>
           ))}

@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import HeroAnimation from './HeroAnimation';
 
-// Кастомные SVG-иконки для нижних карточек (соответствуют дизайну макета)
 
 // Иконка 1: Желтая сияющая звезда (Latest News Updates)
 function StarburstIcon() {
@@ -51,36 +50,43 @@ function LeafIcon() {
   );
 }
 
-export default function Hero() {
+type StatItem = { val: string; label: string };
+
+const defaultStats: StatItem[] = [
+  { val: '300+', label: 'Resources available' },
+  { val: '12k+', label: 'Total Downloads' },
+  { val: '10k+', label: 'Active Users' },
+];
+
+type HeroProps = {
+  initialStats?: StatItem[];
+};
+
+export default function Hero({ initialStats }: HeroProps) {
   // Анимация плавного появления элементов
   const fadeInUp = {
     hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8 } }
   };
 
-  // Данные для блока статистики левой колонки
-  const stats = [
-    { val: '300+', label: 'Resources available' },
-    { val: '12k+', label: 'Total Downloads' },
-    { val: '10k+', label: 'Active Users' }
-  ];
+  const stats = initialStats?.length ? initialStats : defaultStats;
 
   // Данные для трех нижних карточек
   const features = [
-    { 
-      title: 'Latest News Updates', 
+    {
+      title: 'Latest News Updates',
       desc: 'Stay Current',
       bottomText: 'Over 1,000 articles published monthly',
       icon: <StarburstIcon />
     },
-    { 
-      title: 'Expert Contributors', 
+    {
+      title: 'Expert Contributors',
       desc: 'Trusted Insights',
       bottomText: '50+ renowned AI experts on our team',
       icon: <CirclesIcon />
     },
-    { 
-      title: 'Global Readership', 
+    {
+      title: 'Global Readership',
       desc: 'Worldwide Impact',
       bottomText: '2 million monthly readers',
       icon: <LeafIcon />
@@ -97,59 +103,60 @@ export default function Hero() {
 
   return (
     <section className="bg-[#141414] text-white border-b border-[#262626]">
-      {/* Главный контейнер Hero-секции */}
+      {/* Главный контейнер Hero‑секции */}
       <div className="max-w-[1536px] mx-auto flex flex-col lg:flex-row">
 
         {/* ЛЕВАЯ КОЛОНКА: Заголовки, описание и статистика */}
         <div className="flex-[1.2] flex flex-col lg:border-r border-[#262626]">
           {/* Контентная часть */}
-          <div className="px-6 py-12 lg:px-20 lg:py-24 flex-grow">
-            <motion.p 
-              initial="hidden" 
-              animate="visible" 
-              variants={fadeInUp} 
-              className="text-[#7E7E81] text-base lg:text-[22px] mb-5 font-light"
+          <div className="gap-[30px] px-4 py-6 lg:px-15 lg:py-24 flex-grow">
+            <motion.p
+              initial="hidden"
+              animate="visible"
+              variants={fadeInUp}
+              className="text-[#7E7E81] text-3xl "
             >
               Your Journey to Tomorrow Begins Here
             </motion.p>
 
-            <motion.h1 
-              initial="hidden" 
-              animate="visible" 
-              variants={fadeInUp} 
-              className="text-[38px] md:text-[52px] lg:text-[68px] font-semibold mb-5 leading-[1.08] tracking-[-0.02em] text-white"
-            >
-              Explore the Frontiers of
-              <br className="hidden lg:block" />
-              Artificial Intelligence
-            </motion.h1>
+            <div className="gap-[20px]">
+              <motion.h1
+                initial="hidden"
+                animate="visible"
+                variants={fadeInUp}
+                className="w-[800px] text-[70px] sm:text-[32px] md:text-[52px] lg:text-[68px] font-semibold mb-5 leading-[1.08] tracking-[-0.02em] text-white"
+              >
+                Explore the Frontiers of
+                Artificial Intelligence
+              </motion.h1>
 
-            <motion.p 
-              initial="hidden" 
-              animate="visible" 
-              variants={fadeInUp} 
-              className="text-[#7E7E81] text-sm lg:text-lg mb-14 max-w-[760px] font-light leading-relaxed"
-            >
-              Welcome to the epicenter of AI innovation. FutureTech AI News is your passport to a world where machines think, learn, and reshape the future. Join us on this visionary expedition into the heart of AI.
-            </motion.p>
+              <motion.p
+                initial="hidden"
+                animate="visible"
+                variants={fadeInUp}
+                className="text-[#7E7E81] text-lg sm:text-base lg:text-lg mb-14 w-[850px] font-light leading-relaxed"
+              >
+                Welcome to the epicenter of AI innovation. FutureTech AI News is your passport to a world where machines think, learn, and reshape the future. Join us on this visionary expedition into the heart of AI.
+              </motion.p>
+            </div>
           </div>
 
-          {/* Блок статистики: прилегает к нижней границе, с выравниванием по контенту */}
-          <div className="grid grid-cols-3 border-t border-[#262626]">
+          {/* Блок статистики */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 border-t border-[#262626]">
             {stats.map((stat, i) => (
-              <div 
-                key={i} 
+              <div
+                key={i}
                 className={`py-6 lg:py-10 flex flex-col justify-center
                   ${i < 2 ? 'border-r border-[#262626]' : ''}
-                  ${i === 0 ? 'pl-6 lg:pl-20' : 'pl-4 lg:pl-10'}
-                  ${i === 2 ? 'pr-6 lg:pr-20' : 'pr-4 lg:pr-10'}
+                  ${i === 0 ? 'pl-4 sm:pl-6 lg:pl-20' : 'pl-2 sm:pl-4 lg:pl-10'}
+                  ${i === 2 ? 'pr-4 sm:pr-6 lg:pr-20' : 'pr-2 sm:pr-4 lg:pr-10'}
                 `}
               >
                 <p className="text-[28px] sm:text-[36px] lg:text-[44px] font-bold leading-none text-white">
                   {stat.val.replace('+', '')}
                   <span className="text-[#FFD11A]">+</span>
                 </p>
-                <p className="text-[#7E7E81] text-[11px] lg:text-[14px] mt-2 sm:mt-3 font-light">
+                <p className="text-[#7E7E81] text-[11px] sm:text-[14px] mt-2 sm:mt-3 font-light">
                   {stat.label}
                 </p>
               </div>
@@ -158,7 +165,7 @@ export default function Hero() {
         </div>
 
         {/* ПРАВАЯ КОЛОНКА: Анимация и плавающая карточка */}
-        <div className="flex-1 relative min-h-[460px] lg:min-h-full overflow-hidden bg-[#0D0E11]">
+        <div className="flex-1 relative min-h-[300px] sm:min-h-[460px] lg:min-h-full overflow-hidden bg-[#0D0E11]">
           {/* Фоновая анимация лучей */}
           <div className="absolute inset-0 z-0">
             <HeroAnimation />
@@ -169,33 +176,33 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
-            className="absolute z-10 left-6 bottom-8 md:left-12 md:bottom-12 max-w-[480px] flex flex-col items-start"
+            className="absolute z-10 left-4 bottom-4 sm:left-6 sm:bottom-8 md:left-12 md:bottom-12 max-w-[480px] flex flex-col items-start gap-7 "
           >
             {/* Накладывающиеся аватары участников */}
-            <div className="inline-flex items-center -space-x-3 mb-6 px-3 py-1.5 rounded-full border border-[#262626] bg-[#1A1A1A]">
+            <div className="flex items-start p-2.5 rounded-[100px] border border-[#262626] bg-[#1A1A1A]">
               {avatars.map((src, i) => (
                 <img
                   key={i}
                   src={src}
                   alt="Contributor avatar"
-                  className="w-8 h-8 rounded-full border-2 border-[#1A1A1A] object-cover flex-shrink-0"
+                  className="w-[60px] h-[60px] rounded-full border-2 border-[#1A1A1A] object-cover flex-shrink-0 [&:not(:first-child)]:-ml-[14px]"
                 />
               ))}
             </div>
 
-            <h3 className="text-2xl md:text-[28px] font-semibold text-white mb-2 tracking-tight leading-tight">
+            <div className="flex flex-col items-start gap-[14px]">
+              <h3 className="text-2xl sm:text-[28px] font-semibold text-white mb-2 tracking-tight leading-tight">
               Explore 1000+ resources
             </h3>
-            
-            <p className="text-[#98989A] text-sm md:text-base font-light mb-6 leading-relaxed max-w-[380px]">
+
+            <p className="text-[#98989A] text-sm sm:text-base font-light leading-relaxed max-w-[450px]">
               Over 1,000 articles on emerging tech trends and breakthroughs.
             </p>
+            </div>
 
-            {/* Кнопка действия (строчный элемент) */}
+            {/* Кнопка действия */}
             <button className="inline-flex items-center gap-3 bg-[#141414] border border-[#262626] px-5 py-3.5 rounded-[10px] text-[#98989A] transition-all duration-300 hover:bg-[#1A1A1A] hover:text-white hover:border-[#3a3a3a] cursor-pointer group">
-              <span className="text-sm font-medium transition-colors">
-                Explore Resources
-              </span>
+              <span className="text-sm font-medium">Explore Resources</span>
               <ArrowUpRight size={18} className="text-[#FFD11A] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </button>
           </motion.div>
@@ -205,8 +212,8 @@ export default function Hero() {
       {/* НИЖНИЙ БЛОК: Три карточки преимуществ */}
       <div className="max-w-[1536px] mx-auto grid grid-cols-1 md:grid-cols-3 border-t border-[#262626]">
         {features.map((item, i) => (
-          <div 
-            key={i} 
+          <div
+            key={i}
             className={`p-6 lg:p-10 border-b md:border-b-0 ${i < 2 ? 'md:border-r' : ''} border-[#262626] group cursor-pointer hover:bg-[#17181A]/40 transition-colors`}
           >
             {/* Верхний ряд карточки: Иконка + Названия (слева) и Кнопка-стрелка (справа) */}
@@ -226,7 +233,7 @@ export default function Hero() {
                   </p>
                 </div>
               </div>
-              
+
               {/* Круглая кнопка со стрелкой */}
               <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#FFD11A] text-black flex items-center justify-center transition-transform duration-300 group-hover:scale-105 flex-shrink-0">
                 <ArrowUpRight size={20} className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />

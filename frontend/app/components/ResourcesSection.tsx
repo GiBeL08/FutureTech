@@ -53,7 +53,7 @@ export default function ResourcesSection() {
             <h2 className="text-[32px] sm:text-[42px] lg:text-[48px] font-semibold text-white tracking-tight leading-tight">
               Unlock Valuable Knowledge
               <br />
-              with FutureTech's Resources
+              with FutureTech&apos;s Resources
             </h2>
           </div>
           
