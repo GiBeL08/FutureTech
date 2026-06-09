@@ -16,8 +16,8 @@ async function fetcher(url: string) {
 
 // 🔥 нормализация (ГАРАНТИЯ id)
 function normalizeArray(data: any[]) {
-  return data.map((item) => ({
-    id: item.id ?? item._id ?? 0, // 👈 ГЛАВНОЕ
+  return data.map((item, index) => ({
+    id: item.id ?? item._id ?? `temp-${Date.now()}-${index}`, // 👈 уникальный ID если отсутствует
     ...item,
   }));
 }

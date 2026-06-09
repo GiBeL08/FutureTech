@@ -109,19 +109,23 @@ export default function NewsHero({ featured, smallArticles }: Props) {
         </motion.div>
 
         {/* SMALL */}
+         {/* SMALL */}
         <div className="grid grid-cols-1 sm:grid-cols-3">
-          {smallArticles.map((article) => (
-            <Link key={article.id} href={`/news/${article.id}`}>
-              <div className="p-4 border-b border-[#262626] cursor-pointer hover:bg-[#1A1A1C]">
-                <img
-                  src={article.image}
-                  alt={article.title}
-                  className="w-full h-[180px] object-cover mb-3"
-                />
-                <h4 className="text-white">{article.title}</h4>
-              </div>
-            </Link>
-          ))}
+          {smallArticles.map((article, index) => {
+            const articleId = article.id ?? `temp-${Date.now()}-${index}`;
+            return (
+              <Link key={articleId} href={`/news/${articleId}`}>
+                <div className="p-4 border-b border-[#262626] cursor-pointer hover:bg-[#1A1A1C]">
+                  <img
+                    src={article.image}
+                    alt={article.title}
+                    className="w-full h-[180px] object-cover mb-3"
+                  />
+                  <h4 className="text-white">{article.title}</h4>
+                </div>
+              </Link>
+            );
+          })}
         </div>
 
       </div>
