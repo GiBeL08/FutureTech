@@ -1,14 +1,31 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from "next/link";
-import { usePathname } from 'next/navigation';
-import { Menu, X } from 'lucide-react'; // Иконки для мобилки
+import { usePathname, useRouter } from 'next/navigation';
+import { Menu, X, LogOut } from 'lucide-react'; // Иконки для мобилки
 import Button from "./Button"; 
 
 export default function Header() {
   const pathname = usePathname();
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      setUser(JSON.parse(userStr));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+    setIsMenuOpen(false);
+    router.push('/');
+  };
 
   const navLinks = [
     { name: 'Home', href: '/' },
@@ -47,8 +64,43 @@ export default function Header() {
           })}
         </nav>
 
-        {/* Кнопка Contact (скрыта на мобилке) */}
-        <div className="hidden lg:flex items-center">
+        {/* Кнопка Contact и Auth (скрыта на мобилке) */}
+        <div className="hidden lg:flex items-center gap-4">
+          {user ? (
+            <>
+              <span className="text-[#98989A]">Hi, {user.name}</span>
+              {user.role === 'admin' && (
+                <Link 
+                  href="/admin"
+                  className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700"
+                >
+                  Admin
+                </Link>
+              )}
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 text-white hover:text-red-400 flex items-center gap-2"
+              >
+                <LogOut size={18} />
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link 
+                href="/login"
+                className="px-4 py-2 text-[#00FF00] hover:bg-[#1A1A1C] rounded"
+              >
+                Login
+              </Link>
+              <Link 
+                href="/register"
+                className="px-4 py-2 bg-[#00FF00] text-black font-semibold rounded hover:bg-[#00CC00]"
+              >
+                Register
+              </Link>
+            </>
+          )}
           <Link href="/contact">
             <Button />
           </Link>
@@ -77,7 +129,45 @@ export default function Header() {
                 {link.name}
               </Link>
             ))}
-            <div className="pt-4 border-t border-[#262626]">
+            <div className="pt-4 border-t border-[#262626] space-y-2">
+              {user ? (
+                <>
+                  <div className="text-[#98989A] text-sm">Hi, {user.name}</div>
+                  {user.role === 'admin' && (
+                    <Link 
+                      href="/admin"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="block px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700"
+                    >
+                      Admin
+                    </Link>
+                  )}
+                  <button
+                    onClick={handleLogout}
+                    className="w-full px-4 py-2 text-white hover:text-red-400 flex items-center gap-2 justify-center"
+                  >
+                    <LogOut size={18} />
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link 
+                    href="/login"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="block px-4 py-2 text-center text-[#00FF00] hover:bg-[#1A1A1C] rounded"
+                  >
+                    Login
+                  </Link>
+                  <Link 
+                    href="/register"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="block px-4 py-2 text-center bg-[#00FF00] text-black font-semibold rounded hover:bg-[#00CC00]"
+                  >
+                    Register
+                  </Link>
+                </>
+              )}
               <Link href="/contact" onClick={() => setIsMenuOpen(false)}>
                 <Button />
               </Link>
