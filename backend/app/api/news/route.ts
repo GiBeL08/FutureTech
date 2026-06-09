@@ -1,25 +1,41 @@
+import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { handleApiError, jsonOk } from '@/lib/api-response';
 
-export async function GET(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const type = searchParams.get('type');
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const type = searchParams.get('type');
 
-    const articles = await prisma.newsArticle.findMany({
-      where:
-        type === 'featured'
-          ? { featured: true }
-          : type === 'headlines'
-            ? { headline: true }
-            : type === 'similar'
-              ? undefined
-              : undefined,
-      orderBy: { sort: 'asc' },
-    });
+  let where = {};
 
-    return jsonOk(articles);
-  } catch (error) {
-    return handleApiError(error);
+  if (type === 'featured') {
+    where = { featured: true };
+  } else if (type === 'teasers') {
+    where = { featured: false };
+  } else if (type === 'headlines') {
+    where = { headline: true };
   }
+
+  const news = await prisma.newsArticle.findMany({
+    where,
+    orderBy: { sort: 'asc' },
+  });
+
+  // 👇 ВАЖНО: возвращаем id
+  const formatted = news.map((n) => ({
+    id: n.slug, // ✅ ВОТ ЭТО ГЛАВНОЕ
+    title: n.title,
+    desc: n.desc,
+    category: n.category,
+    image: n.image,
+    date: n.date,
+    readTime: n.readTime,
+    author: {
+      name: n.authorName,
+      avatar: n.authorAvatar,
+    },
+  }));
+
+  return NextResponse.json({
+    data: formatted,
+  });
 }

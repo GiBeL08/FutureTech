@@ -1,6 +1,6 @@
 const API_URL = 'http://localhost:3001/api';
 
-// 🔥 универсальный fetcher (один на всё)
+// 🔥 универсальный fetcher
 async function fetcher(url: string) {
   const res = await fetch(`${API_URL}${url}`, {
     cache: 'no-store',
@@ -14,6 +14,14 @@ async function fetcher(url: string) {
   return data.data ?? data;
 }
 
+// 🔥 нормализация (ГАРАНТИЯ id)
+function normalizeArray(data: any[]) {
+  return data.map((item) => ({
+    id: item.id ?? item._id ?? 0, // 👈 ГЛАВНОЕ
+    ...item,
+  }));
+}
+
 // ==================== HOME ====================
 
 export async function getSiteStats(page: 'home' | 'resources') {
@@ -21,7 +29,8 @@ export async function getSiteStats(page: 'home' | 'resources') {
 }
 
 export async function getBlogs() {
-  return fetcher('/blogs');
+  const data = await fetcher('/blogs');
+  return normalizeArray(data);
 }
 
 export async function getTestimonials() {
@@ -31,15 +40,18 @@ export async function getTestimonials() {
 // ==================== NEWS ====================
 
 export async function getFeaturedNews() {
-  return fetcher('/news?type=featured');
+  const data = await fetcher('/news?type=featured');
+  return normalizeArray(data);
 }
 
 export async function getNewsTeasers() {
-  return fetcher('/news?type=teasers');
+  const data = await fetcher('/news?type=teasers');
+  return normalizeArray(data);
 }
 
 export async function getHeadlines() {
-  return fetcher('/news?type=headlines');
+  const data = await fetcher('/news?type=headlines');
+  return normalizeArray(data);
 }
 
 export async function getVideos() {
@@ -49,15 +61,18 @@ export async function getVideos() {
 // ==================== PODCASTS ====================
 
 export async function getFeaturedPodcasts() {
-  return fetcher('/podcasts?type=featured');
+  const data = await fetcher('/podcasts?type=featured');
+  return normalizeArray(data);
 }
 
 export async function getPodcastShows() {
-  return fetcher('/podcasts');
+  const data = await fetcher('/podcasts');
+  return normalizeArray(data);
 }
 
 export async function getLatestPodcastEpisodes() {
-  return fetcher('/podcasts');
+  const data = await fetcher('/podcasts');
+  return normalizeArray(data);
 }
 
 // ==================== RESOURCES ====================
@@ -119,5 +134,10 @@ export async function getBlogById(id: string) {
 }
 
 export async function getSimilarNews() {
-  return fetcher('/similar-news');
+  const data = await fetcher('/similar-news');
+  return normalizeArray(data);
+}
+
+export async function getNewsBySlug(id: string) {
+  return fetcher(`/news/${id}`);
 }
