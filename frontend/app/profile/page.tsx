@@ -256,7 +256,7 @@ export default function ProfilePage() {
                 value={postForm.title}
                 onChange={(e) => setPostForm({ ...postForm, title: e.target.value })}
                 required
-                className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white focus:outline-none focus:border-[#00FF00]"
+                className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white focus:outline-none focus:border-[#FFD700]"
                 placeholder="Post title..."
               />
             </div>
@@ -267,7 +267,7 @@ export default function ProfilePage() {
                 onChange={(e) => setPostForm({ ...postForm, content: e.target.value })}
                 required
                 rows={4}
-                className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white focus:outline-none focus:border-[#00FF00]"
+                className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white focus:outline-none focus:border-[#FFD700]"
                 placeholder="Write your post content..."
               />
             </div>
@@ -277,13 +277,13 @@ export default function ProfilePage() {
                 type="text"
                 value={postForm.image}
                 onChange={(e) => setPostForm({ ...postForm, image: e.target.value })}
-                className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white focus:outline-none focus:border-[#00FF00]"
+                className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white focus:outline-none focus:border-[#FFD700]"
                 placeholder="https://..."
               />
             </div>
             <button
               type="submit"
-              className="w-full px-4 py-2 bg-[#FFD700] text-black font-semibold rounded hover:bg-[#a8ff00] transition-colors duration-300"
+              className="w-full px-4 py-2 bg-[#FFD700] text-black font-semibold rounded hover:bg-[#d5b300] transition-colors duration-300"
             >
               Post
             </button>

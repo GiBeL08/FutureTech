@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useAuth } from '../components/AuthContext';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -12,6 +13,7 @@ export default function LoginPage() {
     email: '',
     password: '',
   });
+  const { setIsLoggedIn } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -22,6 +24,7 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
     setLoading(true);
+    setIsLoggedIn(false);
 
     try {
       const response = await fetch(
@@ -43,6 +46,8 @@ export default function LoginPage() {
       // Save token
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
+
+      setIsLoggedIn(true);
 
       router.push('/profile');
     } catch (err) {

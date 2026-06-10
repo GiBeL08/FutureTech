@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Menu, X, LogOut } from 'lucide-react';
 import Button from './Button';
+import { useAuth } from './AuthContext';
 
 type User = {
   name?: string;
@@ -17,6 +18,7 @@ export default function Header() {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const { isLoggedIn, setIsLoggedIn } = useAuth();
 
   useEffect(() => {
     const syncUser = () => {
@@ -35,6 +37,15 @@ export default function Header() {
     };
   }, []);
 
+  useEffect(() => {
+    const syncUser = () => {
+      const userStr = localStorage.getItem('user');
+      setUser(userStr ? JSON.parse(userStr) : null);
+    };
+
+    syncUser();
+  }, [isLoggedIn]);
+
   const notifyAuthChange = () => {
     window.dispatchEvent(new Event('auth-changed'));
   };
@@ -45,6 +56,7 @@ export default function Header() {
     setUser(null);
     setIsMenuOpen(false);
     notifyAuthChange();
+    setIsLoggedIn(false);
     router.push('/');
   };
 
