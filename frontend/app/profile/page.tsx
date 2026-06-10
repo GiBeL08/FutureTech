@@ -184,12 +184,12 @@ export default function ProfilePage() {
                 <h1 className="text-3xl font-bold">{profile.name || 'Anonymous'}</h1>
                 <p className="text-[#98989A]">{profile.email}</p>
                 <p className="text-[#98989A] mt-2">{profile.bio || 'No bio'}</p>
-                <p className="text-[#00FF00] text-sm mt-2">Role: {profile.role}</p>
+                <p className="text-[#FFD700] text-sm mt-2">Role: {profile.role}</p>
               </div>
             </div>
             <button
               onClick={() => setIsEditing(!isEditing)}
-              className="px-4 py-2 bg-[#00FF00] text-black font-semibold rounded hover:bg-[#00CC00]"
+              className="px-4 py-2 bg-[#FFD700] text-black font-semibold rounded hover:bg-[#d5b300] transition-colors duration-300"
             >
               {isEditing ? 'Cancel' : 'Edit Profile'}
             </button>
@@ -204,7 +204,7 @@ export default function ProfilePage() {
                   type="text"
                   value={editForm.name}
                   onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                  className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white focus:outline-none focus:border-[#00FF00]"
+                  className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white focus:outline-none focus:border-[#FFD700]"
                 />
               </div>
               <div>
@@ -213,7 +213,7 @@ export default function ProfilePage() {
                   type="text"
                   value={editForm.avatar}
                   onChange={(e) => setEditForm({ ...editForm, avatar: e.target.value })}
-                  className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white focus:outline-none focus:border-[#00FF00]"
+                  className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white focus:outline-none focus:border-[#FFD700]"
                   placeholder="https://..."
                 />
               </div>
@@ -223,13 +223,13 @@ export default function ProfilePage() {
                   value={editForm.bio}
                   onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
                   rows={3}
-                  className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white focus:outline-none focus:border-[#00FF00]"
+                  className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white focus:outline-none focus:border-[#FFD700]"
                   placeholder="Tell us about yourself..."
                 />
               </div>
               <button
                 type="submit"
-                className="w-full px-4 py-2 bg-[#00FF00] text-black font-semibold rounded hover:bg-[#00CC00]"
+                className="w-full px-4 py-2 bg-[#FFD700] text-black font-semibold rounded hover:bg-[#d5b300] transition-colors duration-300"
               >
                 Save Changes
               </button>
@@ -240,7 +240,7 @@ export default function ProfilePage() {
         {/* Create Post Button */}
         <button
           onClick={() => setIsCreatingPost(!isCreatingPost)}
-          className="flex items-center gap-2 px-6 py-3 bg-[#00FF00] text-black font-semibold rounded mb-8 hover:bg-[#00CC00]"
+          className="flex items-center gap-2 px-6 py-3 bg-[#FFD700] text-black font-semibold rounded mb-8 hover:bg-[#d5b300] transition-colors duration-300 "
         >
           <Plus size={20} />
           {isCreatingPost ? 'Cancel' : 'Create Post'}
@@ -283,7 +283,7 @@ export default function ProfilePage() {
             </div>
             <button
               type="submit"
-              className="w-full px-4 py-2 bg-[#00FF00] text-black font-semibold rounded hover:bg-[#00CC00]"
+              className="w-full px-4 py-2 bg-[#FFD700] text-black font-semibold rounded hover:bg-[#a8ff00] transition-colors duration-300"
             >
               Post
             </button>

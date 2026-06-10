@@ -72,7 +72,7 @@ export default function LoginPage() {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white placeholder-[#98989A] focus:outline-none focus:border-[#00FF00]"
+              className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white placeholder-[#98989A] focus:outline-none focus:border-[#FFD700]"
               placeholder="you@example.com"
             />
           </div>
@@ -85,7 +85,7 @@ export default function LoginPage() {
               value={formData.password}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white placeholder-[#98989A] focus:outline-none focus:border-[#00FF00]"
+              className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white placeholder-[#98989A] focus:outline-none focus:border-[#FFD700]"
               placeholder="••••••••"
             />
           </div>
@@ -93,7 +93,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-6 px-4 py-2 bg-[#00FF00] text-black font-semibold rounded hover:bg-[#00CC00] disabled:bg-gray-600 transition"
+            className="w-full mt-6 px-4 py-2 bg-[#FFD700] text-black font-semibold rounded hover:bg-[#d5b300] disabled:bg-gray-600 transition"
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>
@@ -101,7 +101,7 @@ export default function LoginPage() {
 
         <p className="text-center text-[#98989A] mt-6">
           Don&apos;t have an account?{' '}
-          <Link href="/register" className="text-[#00FF00] hover:underline">
+          <Link href="/register" className="text-[#FFD700] hover:underline">
             Register here
           </Link>
         </p>

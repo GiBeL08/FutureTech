@@ -19,9 +19,10 @@ export async function OPTIONS() {
 // POST comment
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const authHeader = request.headers.get('authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return NextResponse.json(
@@ -51,7 +52,7 @@ export async function POST(
 
     // Check if post exists
     const post = await prisma.post.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!post) {
@@ -65,7 +66,7 @@ export async function POST(
       data: {
         text,
         authorId: decoded.userId,
-        postId: params.id,
+        postId: id,
       },
       include: {
         author: {

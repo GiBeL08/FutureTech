@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 type Props = {
   featured: {
-    id: number; // 👈 ВАЖНО
+    id: number | string;
     image: string;
     category: string;
     title: string;
@@ -19,7 +19,7 @@ type Props = {
     readTime: string;
   } | null;
   smallArticles: {
-    id: number; // 👈 добавил
+    id: number | string | null;
     image: string;
     title: string;
     category: string;
@@ -28,7 +28,7 @@ type Props = {
 
 export default function NewsHero({ featured, smallArticles }: Props) {
   const activeFeatured = featured || {
-    id: 1, // 👈 fallback
+    id: 1,
     image:
       'https://images.unsplash.com/photo-1532601224476-15c79f2f7a51?auto=format&fit=crop&w=900&h=600&q=80',
     category: 'Climate Change',
@@ -51,8 +51,6 @@ export default function NewsHero({ featured, smallArticles }: Props) {
   return (
     <section className="bg-[#141414] text-white border-b border-[#262626]">
       <div className="max-w-[1536px] mx-auto border-x border-[#262626]">
-
-        {/* ШАПКА */}
         <div className="px-4 py-8 sm:px-6 sm:py-10 lg:px-20 lg:py-16 border-b border-[#262626]">
           <motion.div initial="hidden" animate="visible" variants={fadeInUp}>
             <div className="inline-block bg-[#1A1A1A] border border-[#262626] px-4 py-1.5 rounded-[6px] mb-4">
@@ -68,7 +66,6 @@ export default function NewsHero({ featured, smallArticles }: Props) {
           </motion.div>
         </div>
 
-        {/* FEATURED */}
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -90,16 +87,11 @@ export default function NewsHero({ featured, smallArticles }: Props) {
           </div>
 
           <div className="p-6 lg:p-12 flex flex-col gap-4">
-            <h2 className="text-2xl font-semibold">
-              {activeFeatured.title}
-            </h2>
+            <h2 className="text-2xl font-semibold">{activeFeatured.title}</h2>
 
-            <p className="text-[#98989A]">
-              {activeFeatured.desc}
-            </p>
+            <p className="text-[#98989A]">{activeFeatured.desc}</p>
 
-            {/* 🔥 КНОПКА */}
-            <Link href={`/news/${activeFeatured.id ?? 1}`}>
+            <Link href={`/news/${activeFeatured.id}`}>
               <button className="inline-flex items-center gap-3 border border-[#262626] px-5 py-3 rounded text-[#98989A] hover:text-white">
                 Read More
                 <ArrowUpRight size={18} />
@@ -108,13 +100,13 @@ export default function NewsHero({ featured, smallArticles }: Props) {
           </div>
         </motion.div>
 
-        {/* SMALL */}
-         {/* SMALL */}
         <div className="grid grid-cols-1 sm:grid-cols-3">
-          {smallArticles.map((article, index) => {
-            const articleId = article.id ?? `temp-${Date.now()}-${index}`;
+          {smallArticles.map((article) => {
+            // ❗ если нет id — не рендерим
+            if (!article.id) return null;
+
             return (
-              <Link key={articleId} href={`/news/${articleId}`}>
+              <Link key={article.id} href={`/news/${article.id}`}>
                 <div className="p-4 border-b border-[#262626] cursor-pointer hover:bg-[#1A1A1C]">
                   <img
                     src={article.image}
@@ -127,7 +119,6 @@ export default function NewsHero({ featured, smallArticles }: Props) {
             );
           })}
         </div>
-
       </div>
     </section>
   );

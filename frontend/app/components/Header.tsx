@@ -1,29 +1,50 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Link from "next/link";
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Menu, X, LogOut } from 'lucide-react'; // Иконки для мобилки
-import Button from "./Button"; 
+import { Menu, X, LogOut } from 'lucide-react';
+import Button from './Button';
+
+type User = {
+  name?: string;
+  avatar?: string;
+  role?: string;
+};
 
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      setUser(JSON.parse(userStr));
-    }
+    const syncUser = () => {
+      const userStr = localStorage.getItem('user');
+      setUser(userStr ? JSON.parse(userStr) : null);
+    };
+
+    syncUser();
+
+    window.addEventListener('storage', syncUser);
+    window.addEventListener('auth-changed', syncUser as EventListener);
+
+    return () => {
+      window.removeEventListener('storage', syncUser);
+      window.removeEventListener('auth-changed', syncUser as EventListener);
+    };
   }, []);
+
+  const notifyAuthChange = () => {
+    window.dispatchEvent(new Event('auth-changed'));
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setUser(null);
     setIsMenuOpen(false);
+    notifyAuthChange();
     router.push('/');
   };
 
@@ -34,17 +55,40 @@ export default function Header() {
     { name: 'Resources', href: '/resources' },
   ];
 
+  const renderUserBadge = (currentUser: User, onClick?: () => void) => {
+    const initial = currentUser.name?.[0]?.toUpperCase() || 'U';
+
+    return (
+      <Link
+        href="/profile"
+        onClick={onClick}
+        className="flex items-center gap-3 rounded-full border border-[#262626] bg-[#101010] px-3 py-2 hover:bg-[#171717] transition-colors"
+      >
+        <div className="w-10 h-10 rounded-full overflow-hidden bg-[#262626] border border-[#3a3a3a] flex items-center justify-center shrink-0">
+          {currentUser.avatar ? (
+            <img
+              src={currentUser.avatar}
+              alt={currentUser.name || 'Profile'}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span className="text-sm font-semibold text-white">{initial}</span>
+          )}
+        </div>
+        <span className="text-sm font-medium text-white max-w-[160px] truncate">
+          {currentUser.name || 'Profile'}
+        </span>
+      </Link>
+    );
+  };
+
   return (
     <header className="relative bg-[#1A1A1A] text-white border-b border-[#262626] z-50">
-      {/* Контейнер с адаптивными отступами: на мобилке 24px, на десктопе 162px */}
       <div className="flex items-center justify-between px-6 py-5 lg:px-[80px] lg:py-[24px]">
-        
-        {/* Логотип */}
         <Link href="/" className="flex-shrink-0">
           <img src="/icons/Logo.svg" alt="Logo" className="h-10 w-auto" />
         </Link>
 
-        {/* ДЕСТОПНАЯ НАВИГАЦИЯ (скрыта на мобилке: hidden, видна на планшете/ПК: lg:flex) */}
         <nav className="hidden lg:flex gap-1 bg-[#0F0F0F] p-1 rounded-[12px] border border-[#262626]">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
@@ -54,8 +98,8 @@ export default function Header() {
                 href={link.href}
                 className={`px-6 py-3 rounded-[10px] text-lg transition-all duration-200 ${
                   isActive
-                    ? 'bg-[#141414] text-white border border-[#262626]' 
-                    : 'text-[#7E7E81] hover:text-white border border-transparent' 
+                    ? 'bg-[#141414] text-white border border-[#262626]'
+                    : 'text-[#7E7E81] hover:text-white border border-transparent'
                 }`}
               >
                 {link.name}
@@ -64,13 +108,12 @@ export default function Header() {
           })}
         </nav>
 
-        {/* Кнопка Contact и Auth (скрыта на мобилке) */}
         <div className="hidden lg:flex items-center gap-4">
           {user ? (
             <>
-              <span className="text-[#98989A]">Hi, {user.name}</span>
+              {renderUserBadge(user)}
               {user.role === 'admin' && (
-                <Link 
+                <Link
                   href="/admin"
                   className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700"
                 >
@@ -87,15 +130,15 @@ export default function Header() {
             </>
           ) : (
             <>
-              <Link 
+              <Link
                 href="/login"
-                className="px-4 py-2 text-[#00FF00] hover:bg-[#1A1A1C] rounded"
+                className="px-4 py-2 text-[#FFD700] hover:bg-[#1A1A1C] rounded"
               >
                 Login
               </Link>
-              <Link 
+              <Link
                 href="/register"
-                className="px-4 py-2 bg-[#00FF00] text-black font-semibold rounded hover:bg-[#00CC00]"
+                className="px-4 py-2 bg-[#FFD700] text-black font-semibold rounded hover:bg-[#d5b300]"
               >
                 Register
               </Link>
@@ -106,8 +149,7 @@ export default function Header() {
           </Link>
         </div>
 
-        {/* КНОПКА-БУРГЕР (видна только на мобилке) */}
-        <button 
+        <button
           className="lg:hidden p-2 text-white"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
@@ -115,7 +157,6 @@ export default function Header() {
         </button>
       </div>
 
-      {/* МОБИЛЬНОЕ МЕНЮ (выпадает при клике) */}
       {isMenuOpen && (
         <div className="absolute top-full left-0 w-full bg-[#1A1A1A] border-b border-[#262626] lg:hidden animate-in fade-in slide-in-from-top-5">
           <nav className="flex flex-col p-6 gap-4">
@@ -124,7 +165,9 @@ export default function Header() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsMenuOpen(false)}
-                className={`text-xl ${pathname === link.href ? 'text-white font-bold' : 'text-[#7E7E81]'}`}
+                className={`text-xl ${
+                  pathname === link.href ? 'text-white font-bold' : 'text-[#7E7E81]'
+                }`}
               >
                 {link.name}
               </Link>
@@ -132,9 +175,9 @@ export default function Header() {
             <div className="pt-4 border-t border-[#262626] space-y-2">
               {user ? (
                 <>
-                  <div className="text-[#98989A] text-sm">Hi, {user.name}</div>
+                  {renderUserBadge(user, () => setIsMenuOpen(false))}
                   {user.role === 'admin' && (
-                    <Link 
+                    <Link
                       href="/admin"
                       onClick={() => setIsMenuOpen(false)}
                       className="block px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700"
@@ -152,14 +195,14 @@ export default function Header() {
                 </>
               ) : (
                 <>
-                  <Link 
+                  <Link
                     href="/login"
                     onClick={() => setIsMenuOpen(false)}
                     className="block px-4 py-2 text-center text-[#00FF00] hover:bg-[#1A1A1C] rounded"
                   >
                     Login
                   </Link>
-                  <Link 
+                  <Link
                     href="/register"
                     onClick={() => setIsMenuOpen(false)}
                     className="block px-4 py-2 text-center bg-[#00FF00] text-black font-semibold rounded hover:bg-[#00CC00]"

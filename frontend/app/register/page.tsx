@@ -84,7 +84,7 @@ export default function RegisterPage() {
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white placeholder-[#98989A] focus:outline-none focus:border-[#00FF00]"
+              className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white placeholder-[#98989A] focus:outline-none focus:border-[#FFD700]"
               placeholder="John Doe"
             />
           </div>
@@ -97,7 +97,7 @@ export default function RegisterPage() {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white placeholder-[#98989A] focus:outline-none focus:border-[#00FF00]"
+              className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white placeholder-[#98989A] focus:outline-none focus:border-[#FFD700]"
               placeholder="you@example.com"
             />
           </div>
@@ -110,7 +110,7 @@ export default function RegisterPage() {
               value={formData.password}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white placeholder-[#98989A] focus:outline-none focus:border-[#00FF00]"
+              className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white placeholder-[#98989A] focus:outline-none focus:border-[#FFD700]"
               placeholder="••••••••"
             />
           </div>
@@ -123,7 +123,7 @@ export default function RegisterPage() {
               value={formData.confirmPassword}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white placeholder-[#98989A] focus:outline-none focus:border-[#00FF00]"
+              className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white placeholder-[#98989A] focus:outline-none focus:border-[#FFD700]"
               placeholder="••••••••"
             />
           </div>
@@ -131,7 +131,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-6 px-4 py-2 bg-[#00FF00] text-black font-semibold rounded hover:bg-[#00CC00] disabled:bg-gray-600 transition"
+            className="w-full mt-6 px-4 py-2 bg-[#FFD700] text-black font-semibold rounded hover:bg-[#d5b300] disabled:bg-gray-600 transition"
           >
             {loading ? 'Creating Account...' : 'Register'}
           </button>
@@ -139,7 +139,7 @@ export default function RegisterPage() {
 
         <p className="text-center text-[#98989A] mt-6">
           Already have an account?{' '}
-          <Link href="/login" className="text-[#00FF00] hover:underline">
+          <Link href="/login" className="text-[#FFD700] hover:underline">
             Login here
           </Link>
         </p>
