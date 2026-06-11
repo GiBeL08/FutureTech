@@ -6,45 +6,13 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Menu, X, LogOut } from 'lucide-react';
 import Button from './Button';
 import { useAuth } from './AuthContext';
-
-type User = {
-  name?: string;
-  avatar?: string;
-  role?: string;
-};
+import { User } from '../lib/user';
 
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-  const { isLoggedIn, setIsLoggedIn } = useAuth();
-
-  useEffect(() => {
-    const syncUser = () => {
-      const userStr = localStorage.getItem('user');
-      setUser(userStr ? JSON.parse(userStr) : null);
-    };
-
-    syncUser();
-
-    window.addEventListener('storage', syncUser);
-    window.addEventListener('auth-changed', syncUser as EventListener);
-
-    return () => {
-      window.removeEventListener('storage', syncUser);
-      window.removeEventListener('auth-changed', syncUser as EventListener);
-    };
-  }, []);
-
-  useEffect(() => {
-    const syncUser = () => {
-      const userStr = localStorage.getItem('user');
-      setUser(userStr ? JSON.parse(userStr) : null);
-    };
-
-    syncUser();
-  }, [isLoggedIn]);
+  const { isLoggedIn, user, logout } = useAuth();
 
   const notifyAuthChange = () => {
     window.dispatchEvent(new Event('auth-changed'));
@@ -53,10 +21,9 @@ export default function Header() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    setUser(null);
+    logout();
     setIsMenuOpen(false);
     notifyAuthChange();
-    setIsLoggedIn(false);
     router.push('/');
   };
 
@@ -121,7 +88,7 @@ export default function Header() {
         </nav>
 
         <div className="hidden lg:flex items-center gap-4">
-          {user ? (
+          {(isLoggedIn && user) ? (
             <>
               {renderUserBadge(user)}
               {user.role === 'admin' && (

@@ -15,7 +15,7 @@ export default function RegisterPage() {
     password: '',
     confirmPassword: '',
   });
-  const { setIsLoggedIn } = useAuth();
+  const { login } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -58,7 +58,7 @@ export default function RegisterPage() {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
 
-      setIsLoggedIn(true);
+      login(data.user);
 
       router.push('/profile');
     } catch (err) {

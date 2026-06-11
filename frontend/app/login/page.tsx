@@ -13,7 +13,7 @@ export default function LoginPage() {
     email: '',
     password: '',
   });
-  const { setIsLoggedIn } = useAuth();
+  const { login } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -24,7 +24,6 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
     setLoading(true);
-    setIsLoggedIn(false);
 
     try {
       const response = await fetch(
@@ -45,9 +44,8 @@ export default function LoginPage() {
 
       // Save token
       localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
 
-      setIsLoggedIn(true);
+      login(data.user);
 
       router.push('/profile');
     } catch (err) {
