@@ -22,7 +22,8 @@ export async function GET(req: Request) {
 
   // 👇 ВАЖНО: возвращаем id
   const formatted = news.map((n) => ({
-    id: n.slug, // ✅ ВОТ ЭТО ГЛАВНОЕ
+    id: n.id, // ✅ Исправлено с n.slug на n.id
+    slug: n.slug,
     title: n.title,
     desc: n.desc,
     category: n.category,

@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { verifyToken } from '@/lib/auth';
-
-const prisma = new PrismaClient();
 
 function corsHeaders() {
   return {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   };
 }
@@ -16,13 +14,40 @@ export async function OPTIONS() {
   return new NextResponse(null, { headers: corsHeaders() });
 }
 
-// POST comment
-export async function POST(
+export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
+    const comments = await prisma.comment.findMany({
+      where: { postId: id },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    return NextResponse.json({ data: comments }, { headers: corsHeaders() });
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Failed to fetch comments' },
+      { status: 500, headers: corsHeaders() }
+    );
+  }
+}
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
     const authHeader = request.headers.get('authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return NextResponse.json(
@@ -41,6 +66,7 @@ export async function POST(
       );
     }
 
+    const { id } = await params;
     const { text } = await request.json();
 
     if (!text) {
@@ -50,9 +76,8 @@ export async function POST(
       );
     }
 
-    // Check if post exists
     const post = await prisma.post.findUnique({
-      where: { id },
+      where: { id }
     });
 
     if (!post) {
@@ -66,27 +91,24 @@ export async function POST(
       data: {
         text,
         authorId: decoded.userId,
-        postId: id,
+        postId: id
       },
       include: {
         author: {
           select: {
             id: true,
             name: true,
-            avatar: true,
-          },
-        },
-      },
+            avatar: true
+          }
+        }
+      }
     });
 
-    return NextResponse.json(
-      { data: comment },
-      { status: 201, headers: corsHeaders() }
-    );
+    return NextResponse.json({ data: comment }, { status: 201, headers: corsHeaders() });
   } catch (error) {
-    console.error('Error creating comment:', error);
+    console.error('Error adding comment:', error);
     return NextResponse.json(
-      { error: 'Failed to create comment' },
+      { error: 'Failed to add comment' },
       { status: 500, headers: corsHeaders() }
     );
   }

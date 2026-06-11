@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { verifyToken } from '@/lib/auth';
-
-const prisma = new PrismaClient();
 
 function corsHeaders() {
   return {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, DELETE, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   };
 }
@@ -16,13 +14,73 @@ export async function OPTIONS() {
   return new NextResponse(null, { headers: corsHeaders() });
 }
 
-// DELETE post
-export async function DELETE(
+// GET single post
+export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
+    
+    const post = await prisma.post.findUnique({
+      where: { id },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+            email: true,
+          },
+        },
+        comments: {
+          include: {
+            author: {
+              select: {
+                id: true,
+                name: true,
+                avatar: true,
+              },
+            },
+          },
+          orderBy: { createdAt: 'desc' }
+        },
+        likes: true,
+      },
+    });
+
+    if (!post) {
+      return NextResponse.json(
+        { error: 'Post not found' },
+        { status: 404, headers: corsHeaders() }
+      );
+    }
+
+    return NextResponse.json(
+      {
+        data: {
+          ...post,
+          likesCount: post.likes.length,
+          commentsCount: post.comments.length,
+        },
+      },
+      { headers: corsHeaders() }
+    );
+  } catch (error) {
+    console.error('Error fetching post:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch post' },
+      { status: 500, headers: corsHeaders() }
+    );
+  }
+}
+
+// DELETE single post (moved from posts/route.ts if needed, assuming user wants to delete specific post)
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
     const authHeader = request.headers.get('authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return NextResponse.json(
@@ -41,8 +99,10 @@ export async function DELETE(
       );
     }
 
+    const { id } = await params;
+
     const post = await prisma.post.findUnique({
-      where: { id },
+      where: { id }
     });
 
     if (!post) {
@@ -54,13 +114,13 @@ export async function DELETE(
 
     if (post.authorId !== decoded.userId) {
       return NextResponse.json(
-        { error: 'Forbidden' },
+        { error: 'Unauthorized to delete this post' },
         { status: 403, headers: corsHeaders() }
       );
     }
 
     await prisma.post.delete({
-      where: { id },
+      where: { id }
     });
 
     return NextResponse.json(

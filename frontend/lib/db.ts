@@ -277,3 +277,81 @@ export async function getSimilarNews() {
 export async function getNewsBySlug(id: string) {
   return fetcher<ApiRecord>(`/news/${id}`);
 }
+
+// ==================== POSTS ====================
+
+export type Post = {
+  id: string;
+  title: string;
+  content: string;
+  image: string | null;
+  authorId: string;
+  author: {
+    id: string;
+    name: string | null;
+    avatar: string | null;
+    email: string;
+  };
+  comments: any[];
+  likes: any[];
+  shares: number;
+  likesCount: number;
+  commentsCount: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export async function getAllPosts() {
+  const data = await fetcher<Post[]>('/posts');
+  return data;
+}
+
+export async function getPostById(id: string) {
+  const data = await fetcher<Post>(`/posts/${id}`);
+  return data;
+}
+
+export async function likePost(id: string, token: string) {
+  const res = await fetch(`${API_URL}/posts/${id}/like`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(`Failed to toggle like: ${errorData.details || res.statusText}`);
+  }
+
+  return res.json();
+}
+
+export async function commentPost(id: string, text: string, token: string) {
+  const res = await fetch(`${API_URL}/posts/${id}/comments`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ text }),
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to add comment');
+  }
+
+  return res.json();
+}
+
+export async function sharePost(id: string) {
+  const res = await fetch(`${API_URL}/posts/${id}/share`, {
+    method: 'POST',
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to share post');
+  }
+
+  return res.json();
+}
