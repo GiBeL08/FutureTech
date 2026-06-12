@@ -44,10 +44,15 @@ export default function LoginPage() {
 
       // Save token
       localStorage.setItem('token', data.token);
+localStorage.setItem('user', JSON.stringify(data.user)); // ← добавь эту строку
+login(data.user);
 
-      login(data.user);
-
-      router.push('/profile');
+// редирект зависит от роли
+if (data.user?.role === 'admin') {
+  router.push('/admin');
+} else {
+  router.push('/profile');
+}
     } catch (err) {
       setError('An error occurred. Please try again.');
     } finally {

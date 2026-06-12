@@ -173,7 +173,7 @@ export default function ProfilePage() {
         <div className="bg-[#1A1A1C] border border-[#262626] rounded-lg p-8 mb-8">
           <div className="flex items-start justify-between mb-6">
             <div className="flex items-start gap-6">
-              <div className="w-24 h-24 bg-gradient-to-br from-[#00FF00] to-[#00CC00] rounded-full flex items-center justify-center">
+              <div className="w-24 h-24 bg-gradient-to-br from-[#FFD700] to-[#FFD700] rounded-full flex items-center justify-center">
                 {profile.avatar ? (
                   <img src={profile.avatar} alt={profile.name} className="w-full h-full rounded-full object-cover" />
                 ) : (
