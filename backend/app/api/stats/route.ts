@@ -11,10 +11,6 @@ export async function GET(request: Request) {
       orderBy: { sort: 'asc' },
     });
 
-    if (!stats.length) {
-      return jsonError('No stats found', 404);
-    }
-
     return jsonOk(stats);
   } catch (error) {
     return handleApiError(error);
