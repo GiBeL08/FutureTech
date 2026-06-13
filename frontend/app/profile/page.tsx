@@ -2,70 +2,49 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Heart, MessageCircle, Share2, Trash2, Plus } from 'lucide-react';
+import {
+  Heart, MessageCircle, Trash2, Plus, LogOut,
+  Camera, User, Mail, FileText, Calendar,
+  Edit3, X, Check, Image, AlignLeft, Type,
+  Shield, ChevronRight
+} from 'lucide-react';
+import { useAuth } from '../components/AuthContext';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
+  const { logout } = useAuth();
+
   const [profile, setProfile] = useState<any>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isCreatingPost, setIsCreatingPost] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [postStep, setPostStep] = useState<1 | 2>(1);
+  const [activeTab, setActiveTab] = useState<'posts' | 'info'>('posts');
 
-  const [editForm, setEditForm] = useState({
-    name: '',
-    avatar: '',
-    bio: '',
-  });
-
-  const [postForm, setPostForm] = useState({
-    title: '',
-    content: '',
-    image: '',
-  });
+  const [editForm, setEditForm] = useState({ name: '', avatar: '', bio: '' });
+  const [postForm, setPostForm] = useState({ title: '', content: '', image: '' });
 
   useEffect(() => {
     const userStr = localStorage.getItem('user');
     const tokenStr = localStorage.getItem('token');
-
-    if (!userStr || !tokenStr) {
-      router.push('/login');
-      return;
-    }
-
-    setUser(JSON.parse(userStr));
+    if (!userStr || !tokenStr) { router.push('/login'); return; }
     setToken(tokenStr);
-
     fetchProfile(tokenStr);
-  }, [router]);
+  }, []);
 
   const fetchProfile = async (authToken: string) => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL}/users/profile`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
+      const res = await fetch(`${API_URL}/users/profile`, {
+        headers: { Authorization: `Bearer ${authToken}` },
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch profile');
-      }
-
-      const data = await response.json();
+      const data = await res.json();
       setProfile(data.data);
-      setEditForm({
-        name: data.data.name || '',
-        avatar: data.data.avatar || '',
-        bio: data.data.bio || '',
-      });
-    } catch (err) {
-      setError('Failed to load profile');
-      console.error(err);
+      setEditForm({ name: data.data.name || '', avatar: data.data.avatar || '', bio: data.data.bio || '' });
     } finally {
       setLoading(false);
     }
@@ -74,270 +53,356 @@ export default function ProfilePage() {
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!token) return;
-
+    setSaving(true);
     try {
-      const response = await fetch(`${API_URL}/users/profile`, {
+      const res = await fetch(`${API_URL}/users/profile`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(editForm),
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to update profile');
-      }
-
-      const data = await response.json();
+      const data = await res.json();
       setProfile(data.data);
       localStorage.setItem('user', JSON.stringify(data.data));
       setIsEditing(false);
-    } catch (err) {
-      setError('Failed to update profile');
-      console.error(err);
+    } finally {
+      setSaving(false);
     }
   };
 
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!token) return;
-
+    setSaving(true);
     try {
-      const response = await fetch(`${API_URL}/posts`, {
+      await fetch(`${API_URL}/posts`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(postForm),
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to create post');
-      }
-
-      // Refresh profile
       await fetchProfile(token);
       setPostForm({ title: '', content: '', image: '' });
       setIsCreatingPost(false);
-    } catch (err) {
-      setError('Failed to create post');
-      console.error(err);
+      setPostStep(1);
+    } finally {
+      setSaving(false);
     }
   };
 
   const handleDeletePost = async (postId: string) => {
-    if (!token) return;
-
-    try {
-      const response = await fetch(`${API_URL}/posts/${postId}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete post');
-      }
-
-      // Refresh profile
-      await fetchProfile(token);
-    } catch (err) {
-      setError('Failed to delete post');
-      console.error(err);
-    }
+    if (!token || !confirm('Удалить пост?')) return;
+    await fetch(`${API_URL}/posts/${postId}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    await fetchProfile(token);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#141414] text-white flex items-center justify-center">
-        <p>Loading...</p>
-      </div>
-    );
-  }
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    logout();
+    router.push('/');
+  };
 
-  if (!profile) {
-    return (
-      <div className="min-h-screen bg-[#141414] text-white flex items-center justify-center">
-        <p className="text-red-500">{error || 'Profile not found'}</p>
-      </div>
-    );
-  }
+  if (loading) return (
+    <div className="min-h-screen bg-[#0F0F0F] flex items-center justify-center">
+      <div className="text-gray-400 text-sm">Загрузка...</div>
+    </div>
+  );
+
+  if (!profile) return (
+    <div className="min-h-screen bg-[#0F0F0F] flex items-center justify-center">
+      <div className="text-red-400">Профиль не найден</div>
+    </div>
+  );
+
+  const initial = profile.name?.[0]?.toUpperCase() || 'U';
 
   return (
-    <div className="min-h-screen bg-[#141414] text-white py-12">
-      <div className="max-w-4xl mx-auto px-4">
-        {/* Profile Header */}
-        <div className="bg-[#1A1A1C] border border-[#262626] rounded-lg p-8 mb-8">
-          <div className="flex items-start justify-between mb-6">
-            <div className="flex items-start gap-6">
-              <div className="w-24 h-24 bg-gradient-to-br from-[#FFD700] to-[#FFD700] rounded-full flex items-center justify-center">
-                {profile.avatar ? (
-                  <img src={profile.avatar} alt={profile.name} className="w-full h-full rounded-full object-cover" />
-                ) : (
-                  <span className="text-2xl font-bold text-black">{profile.name?.[0]?.toUpperCase()}</span>
+    <div className="min-h-screen bg-[#0F0F0F] text-white">
+      <div className="max-w-3xl mx-auto px-4 py-10">
+
+        {/* ── Карточка профиля ── */}
+        <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-2xl overflow-hidden mb-6">
+
+          {/* Баннер */}
+            <div className="h-24 relative overflow-hidden" style={{ background: '#111' }}>
+              <div className="absolute inset-0" style={{
+                backgroundImage: 'radial-gradient(ellipse 60% 80% at 15% 50%, rgba(255,215,0,0.12) 0%, transparent 70%)',
+              }} />
+              <div className="absolute inset-0" style={{
+                backgroundImage: 'radial-gradient(ellipse 40% 60% at 85% 50%, rgba(255,215,0,0.06) 0%, transparent 70%)',
+              }} />
+              <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#FFD700]/20 to-transparent" />
+            </div>
+
+          <div className="px-6 pb-6">
+            {/* Аватар */}
+            <div className="flex items-end justify-between -mt-10 mb-4">
+              <div className="relative">
+                <div className="w-20 h-20 rounded-2xl border-4 border-[#1A1A1A] bg-[#FFD700]/10 overflow-hidden flex items-center justify-center">
+                  {profile.avatar ? (
+                    <img src={profile.avatar} alt={profile.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-2xl font-bold text-[#FFD700]">{initial}</span>
+                  )}
+                </div>
+                <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-[#1A1A1A]" />
+              </div>
+
+              {/* Кнопки справа */}
+              <div className="flex items-center gap-2 mt-2">
+                <button
+                  onClick={() => setIsEditing(!isEditing)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 border border-[#333] text-gray-400 hover:text-white hover:border-[#444] rounded-lg text-sm transition-all"
+                >
+                  {isEditing ? <><X size={13} /> Отмена</> : <><Edit3 size={13} /> Изменить</>}
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-1.5 px-3 py-1.5 border border-[#333] text-red-400 hover:text-red-300 hover:border-red-400/40 hover:bg-red-400/5 rounded-lg text-sm transition-all"
+                >
+                  <LogOut size={13} />
+                  Выйти
+                </button>
+              </div>
+            </div>
+
+            {/* Имя и роль */}
+            <div className="mb-1">
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-bold">{profile.name || 'Без имени'}</h1>
+                {profile.role === 'admin' && (
+                  <span className="flex items-center gap-1 text-[10px] bg-[#FFD700]/10 text-[#FFD700] border border-[#FFD700]/20 px-2 py-0.5 rounded-full">
+                    <Shield size={9} /> Admin
+                  </span>
                 )}
               </div>
-              <div>
-                <h1 className="text-3xl font-bold">{profile.name || 'Anonymous'}</h1>
-                <p className="text-[#98989A]">{profile.email}</p>
-                <p className="text-[#98989A] mt-2">{profile.bio || 'No bio'}</p>
-                <p className="text-[#FFD700] text-sm mt-2">Role: {profile.role}</p>
-              </div>
+              <p className="text-gray-500 text-sm">{profile.email}</p>
             </div>
-            <button
-              onClick={() => setIsEditing(!isEditing)}
-              className="px-4 py-2 bg-[#FFD700] text-black font-semibold rounded hover:bg-[#d5b300] transition-colors duration-300"
-            >
-              {isEditing ? 'Cancel' : 'Edit Profile'}
-            </button>
-          </div>
 
-          {/* Edit Form */}
-          {isEditing && (
-            <form onSubmit={handleUpdateProfile} className="space-y-4 mt-6 pt-6 border-t border-[#262626]">
-              <div>
-                <label className="block text-sm font-medium mb-2">Name</label>
-                <input
-                  type="text"
-                  value={editForm.name}
-                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                  className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white focus:outline-none focus:border-[#FFD700]"
-                />
+            {profile.bio && !isEditing && (
+              <p className="text-gray-400 text-sm mt-2 leading-relaxed">{profile.bio}</p>
+            )}
+
+            {/* Статистика */}
+            {!isEditing && (
+              <div className="flex gap-4 mt-4 pt-4 border-t border-[#2A2A2A]">
+                <div className="text-center">
+                  <p className="text-lg font-bold text-white">{profile.posts?.length ?? 0}</p>
+                  <p className="text-xs text-gray-500">Постов</p>
+                </div>
+                <div className="w-px bg-[#2A2A2A]" />
+                <div className="text-center">
+                  <p className="text-lg font-bold text-white">
+                    {profile.posts?.reduce((acc: number, p: any) => acc + (p.likesCount ?? 0), 0) ?? 0}
+                  </p>
+                  <p className="text-xs text-gray-500">Лайков</p>
+                </div>
+                <div className="w-px bg-[#2A2A2A]" />
+                <div className="text-center">
+                  <p className="text-lg font-bold text-white">
+                    {new Date(profile.createdAt).toLocaleDateString('ru', { month: 'short', year: 'numeric' })}
+                  </p>
+                  <p className="text-xs text-gray-500">Регистрация</p>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Avatar URL</label>
-                <input
-                  type="text"
-                  value={editForm.avatar}
-                  onChange={(e) => setEditForm({ ...editForm, avatar: e.target.value })}
-                  className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white focus:outline-none focus:border-[#FFD700]"
-                  placeholder="https://..."
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Bio</label>
-                <textarea
-                  value={editForm.bio}
-                  onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
-                  rows={3}
-                  className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white focus:outline-none focus:border-[#FFD700]"
-                  placeholder="Tell us about yourself..."
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full px-4 py-2 bg-[#FFD700] text-black font-semibold rounded hover:bg-[#d5b300] transition-colors duration-300"
-              >
-                Save Changes
-              </button>
-            </form>
-          )}
+            )}
+
+            {/* Форма редактирования */}
+            {isEditing && (
+              <form onSubmit={handleUpdateProfile} className="mt-4 pt-4 border-t border-[#2A2A2A] space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs text-gray-500 mb-1 flex items-center gap-1"><User size={11} /> Имя</label>
+                    <input
+                      value={editForm.name}
+                      onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                      className="w-full px-3 py-2 bg-[#111] border border-[#333] rounded-lg text-sm text-white focus:outline-none focus:border-[#FFD700]/50"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 mb-1 flex items-center gap-1"><Camera size={11} /> Avatar URL</label>
+                    <input
+                      value={editForm.avatar}
+                      onChange={(e) => setEditForm({ ...editForm, avatar: e.target.value })}
+                      placeholder="https://..."
+                      className="w-full px-3 py-2 bg-[#111] border border-[#333] rounded-lg text-sm text-white focus:outline-none focus:border-[#FFD700]/50"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500 mb-1 flex items-center gap-1"><AlignLeft size={11} /> Bio</label>
+                  <textarea
+                    value={editForm.bio}
+                    onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
+                    rows={2}
+                    placeholder="Расскажи о себе..."
+                    className="w-full px-3 py-2 bg-[#111] border border-[#333] rounded-lg text-sm text-white focus:outline-none focus:border-[#FFD700]/50 resize-none"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="flex items-center gap-2 px-4 py-2 bg-[#FFD700] text-black text-sm font-semibold rounded-lg hover:bg-[#d5b300] transition-colors disabled:opacity-50"
+                >
+                  <Check size={14} />
+                  {saving ? 'Сохранение...' : 'Сохранить'}
+                </button>
+              </form>
+            )}
+          </div>
         </div>
 
-        {/* Create Post Button */}
-        <button
-          onClick={() => setIsCreatingPost(!isCreatingPost)}
-          className="flex items-center gap-2 px-6 py-3 bg-[#FFD700] text-black font-semibold rounded mb-8 hover:bg-[#d5b300] transition-colors duration-300 "
-        >
-          <Plus size={20} />
-          {isCreatingPost ? 'Cancel' : 'Create Post'}
-        </button>
+        {/* ── Создание поста (двухшаговый) ── */}
+        {isCreatingPost ? (
+          <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-2xl overflow-hidden mb-6">
+            {/* Заголовок */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#2A2A2A]">
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium text-white">Новый пост</span>
+                <div className="flex items-center gap-1">
+                  <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${postStep >= 1 ? 'bg-[#FFD700] text-black' : 'bg-[#2A2A2A] text-gray-500'}`}>1</span>
+                  <div className={`w-8 h-px ${postStep >= 2 ? 'bg-[#FFD700]' : 'bg-[#2A2A2A]'}`} />
+                  <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${postStep >= 2 ? 'bg-[#FFD700] text-black' : 'bg-[#2A2A2A] text-gray-500'}`}>2</span>
+                </div>
+                <span className="text-xs text-gray-500">{postStep === 1 ? 'Основное' : 'Детали'}</span>
+              </div>
+              <button onClick={() => { setIsCreatingPost(false); setPostStep(1); setPostForm({ title: '', content: '', image: '' }); }}
+                className="text-gray-500 hover:text-white transition-colors">
+                <X size={18} />
+              </button>
+            </div>
 
-        {/* Create Post Form */}
-        {isCreatingPost && (
-          <form onSubmit={handleCreatePost} className="bg-[#1A1A1C] border border-[#262626] rounded-lg p-8 mb-8 space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">Title</label>
-              <input
-                type="text"
-                value={postForm.title}
-                onChange={(e) => setPostForm({ ...postForm, title: e.target.value })}
-                required
-                className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white focus:outline-none focus:border-[#FFD700]"
-                placeholder="Post title..."
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">Content</label>
-              <textarea
-                value={postForm.content}
-                onChange={(e) => setPostForm({ ...postForm, content: e.target.value })}
-                required
-                rows={4}
-                className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white focus:outline-none focus:border-[#FFD700]"
-                placeholder="Write your post content..."
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">Image URL (optional)</label>
-              <input
-                type="text"
-                value={postForm.image}
-                onChange={(e) => setPostForm({ ...postForm, image: e.target.value })}
-                className="w-full px-4 py-2 bg-[#262626] border border-[#404040] rounded text-white focus:outline-none focus:border-[#FFD700]"
-                placeholder="https://..."
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full px-4 py-2 bg-[#FFD700] text-black font-semibold rounded hover:bg-[#d5b300] transition-colors duration-300"
-            >
-              Post
-            </button>
-          </form>
-        )}
-
-        {/* Posts List */}
-        <div className="space-y-6">
-          <h2 className="text-2xl font-bold">Your Posts</h2>
-          {profile.posts && profile.posts.length > 0 ? (
-            profile.posts.map((post: any) => (
-              <div key={post.id} className="bg-[#1A1A1C] border border-[#262626] rounded-lg p-6">
-                <div className="flex justify-between items-start mb-4">
+            <form onSubmit={handleCreatePost} className="p-6">
+              {postStep === 1 ? (
+                <div className="space-y-4">
                   <div>
-                    <h3 className="text-xl font-bold">{post.title}</h3>
-                    <p className="text-[#98989A] text-sm mt-1">
-                      {new Date(post.createdAt).toLocaleDateString()}
-                    </p>
+                    <label className="text-xs text-gray-500 mb-1.5 flex items-center gap-1"><Type size={11} /> Заголовок</label>
+                    <input
+                      value={postForm.title}
+                      onChange={(e) => setPostForm({ ...postForm, title: e.target.value })}
+                      required
+                      placeholder="Придумайте заголовок..."
+                      className="w-full px-4 py-3 bg-[#111] border border-[#333] rounded-xl text-white text-lg font-medium placeholder-gray-600 focus:outline-none focus:border-[#FFD700]/50"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 mb-1.5 flex items-center gap-1"><FileText size={11} /> Содержание</label>
+                    <textarea
+                      value={postForm.content}
+                      onChange={(e) => setPostForm({ ...postForm, content: e.target.value })}
+                      required
+                      rows={6}
+                      placeholder="Напишите текст поста..."
+                      className="w-full px-4 py-3 bg-[#111] border border-[#333] rounded-xl text-white text-sm leading-relaxed placeholder-gray-600 focus:outline-none focus:border-[#FFD700]/50 resize-none"
+                    />
+                    <p className="text-xs text-gray-600 mt-1 text-right">{postForm.content.length} символов</p>
                   </div>
                   <button
-                    onClick={() => handleDeletePost(post.id)}
-                    className="p-2 hover:bg-red-900 rounded text-red-500"
+                    type="button"
+                    onClick={() => setPostStep(2)}
+                    disabled={!postForm.title || !postForm.content}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 bg-[#FFD700] text-black font-semibold rounded-xl text-sm hover:bg-[#d5b300] transition-colors disabled:opacity-40"
                   >
-                    <Trash2 size={20} />
+                    Далее <ChevronRight size={15} />
                   </button>
                 </div>
-                {post.image && (
-                  <img
-                    src={post.image}
-                    alt={post.title}
-                    className="w-full h-64 object-cover rounded mb-4"
-                  />
-                )}
-                <p className="text-[#E0E0E0] mb-4">{post.content}</p>
-                <div className="flex gap-4 text-[#98989A]">
-                  <div className="flex items-center gap-2">
-                    <Heart size={18} />
-                    <span>0</span>
+              ) : (
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-xs text-gray-500 mb-1.5 flex items-center gap-1"><Image size={11} /> Изображение (необязательно)</label>
+                    <input
+                      value={postForm.image}
+                      onChange={(e) => setPostForm({ ...postForm, image: e.target.value })}
+                      placeholder="https://example.com/image.jpg"
+                      className="w-full px-4 py-3 bg-[#111] border border-[#333] rounded-xl text-white text-sm placeholder-gray-600 focus:outline-none focus:border-[#FFD700]/50"
+                    />
                   </div>
-                  <div className="flex items-center gap-2">
-                    <MessageCircle size={18} />
-                    <span>0</span>
+
+                  {/* Превью */}
+                  {postForm.image && (
+                    <div className="rounded-xl overflow-hidden border border-[#333]">
+                      <img src={postForm.image} alt="preview" className="w-full h-40 object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                    </div>
+                  )}
+
+                  {/* Превью поста */}
+                  <div className="bg-[#111] border border-[#2A2A2A] rounded-xl p-4">
+                    <p className="text-xs text-gray-500 mb-2">Предпросмотр</p>
+                    <h3 className="font-bold text-white mb-1">{postForm.title}</h3>
+                    <p className="text-gray-400 text-sm line-clamp-3">{postForm.content}</p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Share2 size={18} />
-                    <span>0</span>
+
+                  <div className="flex gap-2">
+                    <button type="button" onClick={() => setPostStep(1)}
+                      className="px-4 py-2.5 border border-[#333] text-gray-400 hover:text-white rounded-xl text-sm transition-colors">
+                      ← Назад
+                    </button>
+                    <button type="submit" disabled={saving}
+                      className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-[#FFD700] text-black font-semibold rounded-xl text-sm hover:bg-[#d5b300] transition-colors disabled:opacity-50">
+                      <Check size={14} />
+                      {saving ? 'Публикация...' : 'Опубликовать'}
+                    </button>
                   </div>
                 </div>
+              )}
+            </form>
+          </div>
+        ) : (
+          <button
+            onClick={() => setIsCreatingPost(true)}
+            className="w-full flex items-center justify-center gap-2 py-3 border border-dashed border-[#333] text-gray-500 hover:text-white hover:border-[#FFD700]/30 hover:bg-[#FFD700]/5 rounded-2xl text-sm transition-all mb-6"
+          >
+            <Plus size={16} /> Написать пост
+          </button>
+        )}
+
+        {/* ── Посты ── */}
+        <div className="space-y-4">
+          <h2 className="text-sm font-medium text-gray-500 uppercase tracking-widest">
+            Посты · {profile.posts?.length ?? 0}
+          </h2>
+
+          {profile.posts?.length > 0 ? profile.posts.map((post: any) => (
+            <div key={post.id} className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-2xl overflow-hidden hover:border-[#333] transition-colors group">
+              {post.image && (
+                <img src={post.image} alt={post.title} className="w-full h-48 object-cover" />
+              )}
+              <div className="p-5">
+                <div className="flex items-start justify-between mb-2">
+                  <h3 className="font-bold text-white text-lg leading-tight">{post.title}</h3>
+                  <button onClick={() => handleDeletePost(post.id)}
+                    className="opacity-0 group-hover:opacity-100 p-1.5 text-gray-600 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all ml-2 shrink-0">
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+                <p className="text-gray-400 text-sm leading-relaxed line-clamp-3 mb-4">{post.content}</p>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4 text-gray-600 text-sm">
+                    <span className="flex items-center gap-1.5 hover:text-red-400 transition-colors cursor-pointer">
+                      <Heart size={14} /> {post.likesCount ?? 0}
+                    </span>
+                    <span className="flex items-center gap-1.5 hover:text-blue-400 transition-colors cursor-pointer">
+                      <MessageCircle size={14} /> {post.commentsCount ?? 0}
+                    </span>
+                  </div>
+                  <span className="flex items-center gap-1 text-xs text-gray-600">
+                    <Calendar size={11} />
+                    {new Date(post.createdAt).toLocaleDateString('ru')}
+                  </span>
+                </div>
               </div>
-            ))
-          ) : (
-            <p className="text-[#98989A]">No posts yet. Create your first post!</p>
+            </div>
+          )) : (
+            <div className="flex flex-col items-center justify-center py-16 text-gray-600">
+              <FileText size={32} className="mb-3 opacity-30" />
+              <p className="text-sm">Постов пока нет</p>
+              <p className="text-xs text-gray-700 mt-1">Нажмите «Написать пост» чтобы начать</p>
+            </div>
           )}
         </div>
+
       </div>
     </div>
   );
