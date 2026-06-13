@@ -32,9 +32,9 @@ export default function AdminPosts() {
   return (
     <div className="p-8">
       <h2 className="text-2xl font-bold text-white mb-6">Посты ({posts.length})</h2>
-      <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+      <div className="bg-[#1A1A1A] border border-[#393937] rounded-xl overflow-hidden">
         <table className="w-full">
-          <thead className="border-b border-gray-800">
+          <thead className="border-b border-[#393937]">
             <tr className="text-gray-400 text-sm">
               <th className="text-left p-4">Заголовок</th>
               <th className="text-left p-4">Автор</th>
@@ -44,7 +44,7 @@ export default function AdminPosts() {
               <th className="text-left p-4">Действия</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-800">
+          <tbody className="divide-y divide-[#393937]">
             {posts.map((p) => (
               <tr key={p.id} className="hover:bg-gray-800/50 transition-colors">
                 <td className="p-4"><p className="text-white max-w-[250px] truncate">{p.title}</p></td>

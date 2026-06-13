@@ -94,7 +94,7 @@ export default function Header() {
               {user.role === 'admin' && (
                 <Link
                   href="/admin"
-                  className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700"
+                  className="px-4 py-2 bg-[#FFD700] text-black rounded hover:bg-[#d5b300] font-semibold"
                 >
                   Admin
                 </Link>
@@ -159,7 +159,7 @@ export default function Header() {
                     <Link
                       href="/admin"
                       onClick={() => setIsMenuOpen(false)}
-                      className="block px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700"
+                      className="block px-4 py-2 bg-[#FFD700] text-black rounded hover:bg-[#d5b300]"
                     >
                       Admin
                     </Link>

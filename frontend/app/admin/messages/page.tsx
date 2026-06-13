@@ -36,11 +36,11 @@ export default function AdminMessages() {
     <div className="p-8">
       <h2 className="text-2xl font-bold text-white mb-6">Сообщения ({messages.length})</h2>
       <div className="flex gap-6">
-        <div className="w-1/2 bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
-          <div className="divide-y divide-gray-800">
+        <div className="w-1/2 bg-[#1A1A1A] border border-[#393937] rounded-xl overflow-hidden">
+          <div className="divide-y divide-[#7D7D03]">
             {messages.map((m) => (
               <div key={m.id} onClick={() => setSelected(m)}
-                className={`p-4 cursor-pointer hover:bg-gray-800/50 transition-colors ${selected?.id === m.id ? 'bg-gray-800' : ''}`}>
+                className={`p-4 cursor-pointer hover:bg-[#3D3F42]/50 transition-colors ${selected?.id === m.id ? 'bg-[#3D3F42]' : ''}`}>
                 <div className="flex justify-between items-start">
                   <p className="text-white text-sm font-medium">{m.firstName} {m.lastName}</p>
                   <span className="text-gray-500 text-xs">{new Date(m.createdAt).toLocaleDateString('ru')}</span>
@@ -52,7 +52,7 @@ export default function AdminMessages() {
             {messages.length === 0 && <p className="p-6 text-gray-500 text-center">Сообщений нет</p>}
           </div>
         </div>
-        <div className="w-1/2 bg-gray-900 border border-gray-800 rounded-xl p-6">
+        <div className="w-1/2 bg-[#1A1A1A] border border-[#393937] rounded-xl p-6">
           {selected ? (
             <>
               <div className="flex justify-between items-start mb-4">

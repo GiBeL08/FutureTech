@@ -41,9 +41,9 @@ export default function AdminUsers() {
   return (
     <div className="p-8">
       <h2 className="text-2xl font-bold text-white mb-6">Пользователи ({users.length})</h2>
-      <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+      <div className="bg-[#1A1A1A] border border-[#393937] rounded-xl overflow-hidden">
         <table className="w-full">
-          <thead className="border-b border-gray-800">
+          <thead className="border-b border-[#393937]">
             <tr className="text-gray-400 text-sm">
               <th className="text-left p-4">Пользователь</th>
               <th className="text-left p-4">Роль</th>
@@ -52,9 +52,9 @@ export default function AdminUsers() {
               <th className="text-left p-4">Действия</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-800">
+          <tbody className="divide-y divide-[#393937]">
             {users.map((u) => (
-              <tr key={u.id} className="hover:bg-gray-800/50 transition-colors">
+              <tr key={u.id} className="hover:bg-[#3D3F42]/50 transition-colors">
                 <td className="p-4">
                   <p className="text-white">{u.name || '—'}</p>
                   <p className="text-gray-400 text-xs">{u.email}</p>
@@ -63,7 +63,7 @@ export default function AdminUsers() {
                   <select
                     value={u.role}
                     onChange={(e) => changeRole(u.id, e.target.value)}
-                    className="bg-gray-800 text-white text-xs rounded px-2 py-1 border border-gray-700"
+                    className="bg-[#3D3F42] text-white text-xs rounded px-2 py-1 border border-[#7D7D03]"
                   >
                     <option value="user">user</option>
                     <option value="admin">admin</option>
