@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X } from 'lucide-react';
 import Button from './Button';
 import { useAuth } from './AuthContext';
 import { User } from '../lib/user';
@@ -22,29 +21,21 @@ export default function Header() {
 
   const renderUserBadge = (currentUser: User, onClick?: () => void) => {
     const initial = currentUser.name?.[0]?.toUpperCase() || 'U';
-
     return (
       <Link
         href="/profile"
         onClick={onClick}
-        className="group flex items-center gap-2.5 rounded-xl border border-[#2E2E2E] bg-[#111] px-2 py-1.5 hover:border-[#3a3a3a] hover:bg-[#161616] transition-all duration-200"
+        className="group flex items-center h-[48px] w-full lg:w-auto gap-2.5 rounded-[10px] border border-[#262626] bg-[#0F0F0F] px-4 hover:border-[#3a3a3a] hover:bg-[#161616] transition-all duration-200"
       >
-        {/* Аватар */}
         <div className="relative w-8 h-8 rounded-lg overflow-hidden bg-[#1F1F1F] border border-[#333] flex items-center justify-center shrink-0">
           {currentUser.avatar ? (
-            <img
-              src={currentUser.avatar}
-              alt={currentUser.name || 'Profile'}
-              className="w-full h-full object-cover"
-            />
+            <img src={currentUser.avatar} alt={currentUser.name || 'Profile'} className="w-full h-full object-cover" />
           ) : (
             <span className="text-xs font-bold text-white">{initial}</span>
           )}
-          <span className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 rounded-full border border-[#111]" />
+          <span className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 rounded-full border border-[#0F0F0F]" />
         </div>
-
-        {/* Имя + подпись */}
-        <div className="flex flex-col leading-tight">
+        <div className="flex flex-col leading-tight text-left">
           <span className="text-sm font-medium text-white max-w-[120px] truncate">
             {currentUser.name || 'Profile'}
           </span>
@@ -52,9 +43,7 @@ export default function Header() {
             {currentUser.role === 'admin' ? 'Administrator' : 'My profile'}
           </span>
         </div>
-
-        {/* Стрелка */}
-        <svg className="w-3.5 h-3.5 text-[#444] group-hover:text-[#666] transition-colors ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <svg className="w-3.5 h-3.5 text-[#444] group-hover:text-[#666] transition-colors ml-auto lg:ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
         </svg>
       </Link>
@@ -69,17 +58,17 @@ export default function Header() {
             <img src="/icons/Logo.svg" alt="Logo" className="h-10 w-auto" />
           </Link>
 
-          <nav className="hidden lg:flex gap-1 bg-[#0F0F0F] p-1 rounded-[12px] border border-[#262626]">
+          <nav className="hidden lg:flex items-center gap-1">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`px-6 py-3 rounded-[10px] text-lg transition-all duration-200 ${
+                  className={`px-[24px] h-[48px] flex items-center justify-center rounded-[8px] text-base transition-all duration-300 ease-out border ${
                     isActive
-                      ? 'bg-[#141414] text-white border border-[#262626]'
-                      : 'text-[#7E7E81] hover:text-white border border-transparent'
+                      ? 'bg-[#141414] text-white font-medium border-[#333333] shadow-sm'
+                      : 'text-[#7E7E81] border-transparent hover:text-white hover:bg-white/5'
                   }`}
                 >
                   {link.name}
@@ -88,14 +77,14 @@ export default function Header() {
             })}
           </nav>
 
-          <div className="hidden lg:flex items-center gap-4">
+          <div className="hidden lg:flex items-center gap-3">
             {(isLoggedIn && user) ? (
               <>
                 {renderUserBadge(user)}
                 {user.role === 'admin' && (
                   <Link
                     href="/admin"
-                    className="px-4 py-2 bg-[#FFD700] text-black rounded-lg hover:bg-[#d5b300] font-semibold transition-colors"
+                    className="flex items-center justify-center h-[48px] px-6 bg-[#FFD700] text-black rounded-[10px] hover:bg-[#e6c200] font-semibold text-base transition-colors"
                   >
                     Admin
                   </Link>
@@ -103,82 +92,70 @@ export default function Header() {
               </>
             ) : (
               <>
-                <Link
-                  href="/login"
-                  className="px-4 py-2 text-[#FFD700] hover:bg-[#1A1A1C] rounded-lg transition-colors"
-                >
+                <Link href="/login" className="flex items-center justify-center h-[48px] px-6 text-[#7E7E81] hover:text-white rounded-[10px] border border-[#262626] bg-[#0F0F0F] text-base transition-colors">
                   Login
                 </Link>
-                <Link
-                  href="/register"
-                  className="px-4 py-2 bg-[#FFD700] text-black font-semibold rounded-lg hover:bg-[#d5b300] transition-colors"
-                >
+                <Link href="/register" className="flex items-center justify-center h-[48px] px-6 bg-[#FFD700] text-black font-semibold rounded-[10px] hover:bg-[#e6c200] text-base transition-colors">
                   Register
                 </Link>
               </>
             )}
-            <Link href="/contact">
+            <Link href="/contact" className="flex h-[48px] [&>*]:h-full">
               <Button />
             </Link>
           </div>
 
-          <button
-            className="lg:hidden p-2 text-white"
+          <button 
+            className="lg:hidden flex flex-col justify-center items-center w-10 h-10 gap-1.5 focus:outline-none z-50" 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle menu"
           >
-            {isMenuOpen ? <X size={32} /> : <Menu size={32} />}
+            <span className={`block w-6 h-0.5 bg-white transition-all duration-300 ease-in-out ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
+            <span className={`block w-6 h-0.5 bg-white transition-all duration-300 ease-in-out ${isMenuOpen ? 'opacity-0' : ''}`} />
+            <span className={`block w-6 h-0.5 bg-white transition-all duration-300 ease-in-out ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
           </button>
         </div>
 
-        {/* Мобильное меню */}
+        {/* Мобильное меню с улучшенной плавной анимацией */}
         {isMenuOpen && (
-          <div className="absolute top-full left-0 w-full bg-[#1A1A1A] border-b border-[#262626] lg:hidden animate-in fade-in slide-in-from-top-5">
+          <div className="absolute top-full left-0 w-full bg-[#1A1A1A] border-b border-[#262626] lg:hidden animate-in fade-in slide-in-from-top-2 duration-500 ease-in-out">
             <nav className="flex flex-col p-6 gap-4">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={() => setIsMenuOpen(false)}
-                  className={`text-xl ${
-                    pathname === link.href ? 'text-white font-bold' : 'text-[#7E7E81]'
-                  }`}
+                  className={`text-xl transition-colors ${pathname === link.href ? 'text-white font-bold' : 'text-[#7E7E81] hover:text-white'}`}
                 >
                   {link.name}
                 </Link>
               ))}
-              <div className="pt-4 border-t border-[#262626] space-y-2">
+              <div className="pt-4 border-t border-[#262626] space-y-3">
                 {user ? (
                   <>
                     {renderUserBadge(user, () => setIsMenuOpen(false))}
                     {user.role === 'admin' && (
-                      <Link
-                        href="/admin"
-                        onClick={() => setIsMenuOpen(false)}
-                        className="block px-4 py-2 bg-[#FFD700] text-black rounded-lg hover:bg-[#d5b300] text-center font-semibold transition-colors"
-                      >
+                      <Link href="/admin" onClick={() => setIsMenuOpen(false)} className="flex items-center justify-center w-full h-[48px] px-6 bg-[#FFD700] text-black rounded-[10px] hover:bg-[#e6c200] font-semibold transition-colors text-base">
                         Admin
                       </Link>
                     )}
                   </>
                 ) : (
                   <>
-                    <Link
-                      href="/login"
-                      onClick={() => setIsMenuOpen(false)}
-                      className="block px-4 py-2 text-center text-[#FFD700] hover:bg-[#1A1A1C] rounded-lg transition-colors"
-                    >
+                    <Link href="/login" onClick={() => setIsMenuOpen(false)} className="flex items-center justify-center w-full h-[48px] px-6 text-[#7E7E81] bg-[#0F0F0F] border border-[#262626] rounded-[10px] transition-colors text-base">
                       Login
                     </Link>
-                    <Link
-                      href="/register"
-                      onClick={() => setIsMenuOpen(false)}
-                      className="block px-4 py-2 text-center bg-[#FFD700] text-black font-semibold rounded-lg hover:bg-[#d5b300] transition-colors"
-                    >
+                    <Link href="/register" onClick={() => setIsMenuOpen(false)} className="flex items-center justify-center w-full h-[48px] px-6 bg-[#FFD700] text-black font-semibold rounded-[10px] hover:bg-[#e6c200] transition-colors text-base">
                       Register
                     </Link>
                   </>
                 )}
-                <Link href="/contact" onClick={() => setIsMenuOpen(false)}>
+                
+                <Link 
+                  href="/contact" 
+                  onClick={() => setIsMenuOpen(false)} 
+                  className="flex h-[48px] w-full [&>*]:w-full [&>*]:h-full [&>*]:flex [&>*]:items-center [&>*]:justify-center"
+                >
                   <Button />
                 </Link>
               </div>
@@ -187,7 +164,6 @@ export default function Header() {
         )}
       </header>
 
-      {/* Отступ под фиксированную шапку */}
       <div className="h-[89px] lg:h-[88px]" />
     </>
   );

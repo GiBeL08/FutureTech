@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpRight, Heart, Eye } from 'lucide-react';
 
-// Тип для блога
 interface Blog {
   id: number;
   category: string;
@@ -31,7 +30,6 @@ type Props = {
 export default function BlogsSection({ initialBlogs }: Props) {
   const [activeTab, setActiveTab] = useState('All');
 
-  // Категории для табов-фильтров
   const categories = [
     'All',
     'Artificial Intelligence',
@@ -41,7 +39,6 @@ export default function BlogsSection({ initialBlogs }: Props) {
     'Biotechnology'
   ];
 
-  // Массив блогов
   const hardcodedBlogs: Blog[] = [
     {
       id: 1,
@@ -117,16 +114,15 @@ export default function BlogsSection({ initialBlogs }: Props) {
 
   const blogsData = initialBlogs && initialBlogs.length > 0 ? initialBlogs : hardcodedBlogs;
 
-  // Фильтруем блоги на основе активного таба
-  const filteredBlogs = activeTab === 'All' 
-    ? blogsData.slice(0, 3) // На "All" показываем первые 3 для аккуратности макета
+  const filteredBlogs = activeTab === 'All'
+    ? blogsData
     : blogsData.filter(blog => blog.category === activeTab);
 
   return (
     <section className="bg-[#141414] text-white border-b border-[#262626]">
       <div className="max-w-[1536px] mx-auto border-x border-[#262626]">
-        
-        {/* ШАПКА БЛОКА */}
+
+        {/* ШАПКА */}
         <div className="px-6 py-12 lg:px-20 lg:py-16 border-b border-[#262626] flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <div className="flex flex-col items-start">
             <div className="inline-block bg-[#1A1A1A] border border-[#262626] px-4 py-1.5 rounded-[6px] mb-4">
@@ -140,14 +136,14 @@ export default function BlogsSection({ initialBlogs }: Props) {
               In-Depth Blog Posts
             </h2>
           </div>
-          
+
           <button className="inline-flex items-center gap-3 bg-[#1A1A1A] border border-[#262626] px-5 py-3.5 rounded-[10px] text-[#98989A] transition-all duration-300 hover:bg-[#202022] hover:text-white cursor-pointer group flex-shrink-0">
             <span className="text-sm font-medium">View All Blogs</span>
             <ArrowUpRight size={18} className="text-[#FFD11A] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </button>
         </div>
 
-        {/* ТАБЫ-ФИЛЬТРЫ */}
+        {/* ТАБЫ */}
         <div className="px-6 py-6 lg:px-20 lg:py-8 border-b border-[#262626] overflow-x-auto scrollbar-none">
           <div className="flex gap-3 min-w-max">
             {categories.map((tab) => (
@@ -155,8 +151,8 @@ export default function BlogsSection({ initialBlogs }: Props) {
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`px-5 py-3 rounded-[8px] border text-sm font-light transition-all duration-300 cursor-pointer ${
-                  activeTab === tab 
-                    ? 'bg-[#1E1E1F] border-[#3a3a3b] text-white' 
+                  activeTab === tab
+                    ? 'bg-[#1E1E1F] border-[#3a3a3b] text-white'
                     : 'bg-[#141414] border-[#262626] text-[#7E7E81] hover:text-white hover:border-[#333]'
                 }`}
               >
@@ -166,7 +162,7 @@ export default function BlogsSection({ initialBlogs }: Props) {
           </div>
         </div>
 
-        {/* СПИСОК БЛОГОВ С АНИМАЦИЕЙ */}
+        {/* СПИСОК БЛОГОВ */}
         <div className="flex flex-col">
           <AnimatePresence mode="popLayout">
             {filteredBlogs.length > 0 ? (
@@ -180,11 +176,10 @@ export default function BlogsSection({ initialBlogs }: Props) {
                   transition={{ duration: 0.4 }}
                   className="p-6 lg:p-12 border-b border-[#262626] last:border-b-0 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 group hover:bg-[#1A1A1C]/20 transition-colors duration-300"
                 >
-                  
-                  {/* Левая колонка: Автор */}
+                  {/* Автор */}
                   <div className="flex items-center gap-4 lg:w-[260px] flex-shrink-0">
-                    <img 
-                      src={blog.author.avatar} 
+                    <img
+                      src={blog.author.avatar}
                       alt={blog.author.name}
                       className="w-12 h-12 rounded-full object-cover border border-[#262626]"
                     />
@@ -198,7 +193,7 @@ export default function BlogsSection({ initialBlogs }: Props) {
                     </div>
                   </div>
 
-                  {/* Средняя колонка: Контент и метрики */}
+                  {/* Контент */}
                   <div className="flex-grow flex flex-col gap-3 max-w-[720px]">
                     <span className="text-[#7E7E81] text-xs sm:text-sm font-light">
                       {blog.date}
@@ -209,25 +204,18 @@ export default function BlogsSection({ initialBlogs }: Props) {
                     <p className="text-[#98989A] text-sm lg:text-[16px] font-light leading-relaxed">
                       {blog.desc}
                     </p>
-                    
-                    {/* Метрики и теги */}
                     <div className="flex flex-wrap items-center gap-4 mt-3">
-                      {/* Метрика Likes */}
                       <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#262626] bg-[#1A1A1A] text-[#7E7E81] text-xs">
                         <Heart size={14} className="text-[#FF4B4B]" />
                         <span>{blog.metrics.likes}</span>
                       </div>
-                      
-                      {/* Метрика Views */}
                       <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#262626] bg-[#1A1A1A] text-[#7E7E81] text-xs">
                         <Eye size={14} className="text-[#FFD11A]" />
                         <span>{blog.metrics.views}</span>
                       </div>
-
-                      {/* Теги */}
                       {blog.tags.map((tag, idx) => (
-                        <span 
-                          key={idx} 
+                        <span
+                          key={idx}
                           className="px-3 py-1 rounded-[6px] border border-[#262626] bg-[#141414] text-[#7E7E81] text-xs font-light"
                         >
                           {tag}
@@ -236,24 +224,20 @@ export default function BlogsSection({ initialBlogs }: Props) {
                     </div>
                   </div>
 
-                  {/* Правая колонка: Кнопка Читать */}
+                  {/* Кнопка */}
                   <div className="flex-shrink-0 w-full lg:w-auto flex justify-end lg:block">
                     <Link
-  href={`/blogs/${blog.id}`}
-  className="inline-flex items-center gap-3 bg-[#141414] border border-[#262626] px-5 py-3.5 rounded-[10px] text-[#98989A] transition-all duration-300 hover:bg-[#1A1A1A] hover:text-white hover:border-[#3a3a3a] cursor-pointer group w-full lg:w-auto justify-center"
->
-  <span className="text-sm font-medium">Read Blog</span>
-  <ArrowUpRight
-    size={18}
-    className="text-[#FFD11A] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
-  />
-</Link>
+                      href={`/blogs/${blog.id}`}
+                      className="inline-flex items-center gap-3 bg-[#141414] border border-[#262626] px-5 py-3.5 rounded-[10px] text-[#98989A] transition-all duration-300 hover:bg-[#1A1A1A] hover:text-white hover:border-[#3a3a3a] cursor-pointer group w-full lg:w-auto justify-center"
+                    >
+                      <span className="text-sm font-medium">Read Blog</span>
+                      <ArrowUpRight size={18} className="text-[#FFD11A] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                    </Link>
                   </div>
-
                 </motion.div>
               ))
             ) : (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="py-16 text-center text-[#7E7E81]"

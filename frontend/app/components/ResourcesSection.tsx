@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 
-// Иконка для Ebooks
 function EbooksIcon() {
   return (
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -14,7 +13,6 @@ function EbooksIcon() {
   );
 }
 
-// Иконка для Whitepapers
 function WhitepapersIcon() {
   return (
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -41,8 +39,8 @@ export default function ResourcesSection() {
   return (
     <section className="bg-[#141414] text-white border-b border-[#262626]">
       <div className="max-w-[1536px] mx-auto border-x border-[#262626]">
-        
-        {/* ШАПКА БЛОКА */}
+
+        {/* ШАПКА */}
         <div className="px-6 py-12 lg:px-20 lg:py-16 border-b border-[#262626] flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <div className="flex flex-col items-start">
             <div className="inline-block bg-[#1A1A1A] border border-[#262626] px-4 py-1.5 rounded-[6px] mb-4">
@@ -56,7 +54,7 @@ export default function ResourcesSection() {
               with FutureTech&apos;s Resources
             </h2>
           </div>
-          
+
           <button className="inline-flex items-center gap-3 bg-[#1A1A1A] border border-[#262626] px-5 py-3.5 rounded-[10px] text-[#98989A] transition-all duration-300 hover:bg-[#202022] hover:text-white cursor-pointer group flex-shrink-0">
             <span className="text-sm font-medium">View All Resources</span>
             <ArrowUpRight size={18} className="text-[#FFD11A] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -78,14 +76,13 @@ export default function ResourcesSection() {
                 Explore our collection of ebooks covering various AI and tech topics.
               </p>
             </div>
-            
+
             <div className="w-full flex flex-col gap-6">
               <button className="inline-flex items-center gap-3 bg-[#1A1A1A] border border-[#262626] px-5 py-3.5 rounded-[10px] text-[#98989A] transition-all duration-300 hover:bg-[#202022] hover:text-white cursor-pointer group w-full sm:w-auto justify-center">
                 <span className="text-sm font-medium">Download Ebooks Now</span>
                 <ArrowUpRight size={18} className="text-[#FFD11A] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </button>
 
-              {/* Статистика с аватарами */}
               <div className="flex items-center gap-4 border-t border-[#262626] pt-6 w-full">
                 <div className="flex flex-col">
                   <span className="text-[#7E7E81] text-xs font-light">Downloads</span>
@@ -105,7 +102,7 @@ export default function ResourcesSection() {
             </div>
           </div>
 
-          {/* Правая колонка: Визуальная карта */}
+          {/* Правая колонка */}
           <div className="p-6 lg:p-20 bg-[#0F0F10]/40 flex items-center justify-center">
             <motion.div
               initial="hidden"
@@ -114,12 +111,11 @@ export default function ResourcesSection() {
               variants={fadeInUp}
               className="bg-[#1A1A1A] border border-[#262626] p-6 lg:p-8 rounded-[16px] w-full max-w-[620px]"
             >
-              {/* Превью картинка */}
-              <div className="h-[200px] sm:h-[260px] w-full rounded-[10px] overflow-hidden mb-6 relative">
-                <img 
-                  src="https://images.unsplash.com/photo-1593508512255-86ab42a8e620?auto=format&fit=crop&w=600&h=350&q=80" 
+              <div className="h-[200px] sm:h-[260px] w-full rounded-[10px] overflow-hidden mb-6">
+                <img
+                  src="https://images.unsplash.com/photo-1593508512255-86ab42a8e620?auto=format&fit=crop&w=600&h=350&q=80"
                   alt="VR Headset"
-                  className="w-full h-full object-cover filter brightness-[0.8]"
+                  className="w-full h-full object-cover brightness-[0.8]"
                 />
               </div>
 
@@ -130,25 +126,23 @@ export default function ResourcesSection() {
                 A comprehensive guide on AI algorithms, tools, and neural network platforms.
               </p>
 
-              {/* Сетка характеристик */}
               <div className="grid grid-cols-2 gap-4 border-t border-[#262626] pt-6 mb-6">
                 <div className="bg-[#141414] border border-[#262626] p-4 rounded-[10px] flex flex-col">
                   <span className="text-[#7E7E81] text-xs font-light">Total Ebooks</span>
-                  <span className="text-white text-base lg:text-lg font-semibold mt-1">100+</span>
+                  <span className="text-white text-base lg:text-lg font-semibold mt-1">Over 100+</span>
                 </div>
                 <div className="bg-[#141414] border border-[#262626] p-4 rounded-[10px] flex flex-col">
                   <span className="text-[#7E7E81] text-xs font-light">Download Format</span>
-                  <span className="text-white text-base lg:text-lg font-semibold mt-1">PDF</span>
+                  <span className="text-white text-base lg:text-lg font-semibold mt-1">PDF format</span>
                 </div>
               </div>
 
-              {/* Дополнительный текст и кнопка */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <span className="text-[#7E7E81] text-xs sm:text-sm font-light">
-                  Download and read on any device
+                  Ebooks are authored by renowned experts with an average of 10 years of experience
                 </span>
-                <button className="inline-flex items-center gap-2 bg-[#141414] border border-[#262626] px-4 py-2.5 rounded-[8px] text-[#98989A] hover:text-white transition-colors text-xs font-medium cursor-pointer group">
-                  <span>Explore Ebooks</span>
+                <button className="inline-flex items-center gap-2 bg-[#141414] border border-[#262626] px-4 py-2.5 rounded-[8px] text-[#98989A] hover:text-white transition-colors text-xs font-medium cursor-pointer group flex-shrink-0">
+                  <span>Preview</span>
                   <ArrowUpRight size={14} className="text-[#FFD11A] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </button>
               </div>
@@ -171,14 +165,13 @@ export default function ResourcesSection() {
                 Read our scientific whitepapers and research documents.
               </p>
             </div>
-            
+
             <div className="w-full flex flex-col gap-6">
               <button className="inline-flex items-center gap-3 bg-[#1A1A1A] border border-[#262626] px-5 py-3.5 rounded-[10px] text-[#98989A] transition-all duration-300 hover:bg-[#202022] hover:text-white cursor-pointer group w-full sm:w-auto justify-center">
                 <span className="text-sm font-medium">Download Whitepapers Now</span>
                 <ArrowUpRight size={18} className="text-[#FFD11A] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </button>
 
-              {/* Статистика с аватарами */}
               <div className="flex items-center gap-4 border-t border-[#262626] pt-6 w-full">
                 <div className="flex flex-col">
                   <span className="text-[#7E7E81] text-xs font-light">Downloads</span>
@@ -198,7 +191,7 @@ export default function ResourcesSection() {
             </div>
           </div>
 
-          {/* Правая колонка: Визуальная карта */}
+          {/* Правая колонка */}
           <div className="p-6 lg:p-20 bg-[#0F0F10]/40 flex items-center justify-center">
             <motion.div
               initial="hidden"
@@ -207,12 +200,11 @@ export default function ResourcesSection() {
               variants={fadeInUp}
               className="bg-[#1A1A1A] border border-[#262626] p-6 lg:p-8 rounded-[16px] w-full max-w-[620px]"
             >
-              {/* Превью картинка */}
-              <div className="h-[200px] sm:h-[260px] w-full rounded-[10px] overflow-hidden mb-6 relative">
-                <img 
-                  src="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&w=600&h=350&q=80" 
+              <div className="h-[200px] sm:h-[260px] w-full rounded-[10px] overflow-hidden mb-6">
+                <img
+                  src="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&w=600&h=350&q=80"
                   alt="Neural Network Tech"
-                  className="w-full h-full object-cover filter brightness-[0.8]"
+                  className="w-full h-full object-cover brightness-[0.8]"
                 />
               </div>
 
@@ -223,25 +215,23 @@ export default function ResourcesSection() {
                 A research paper on the evolution of neural architecture and deep learning parameters.
               </p>
 
-              {/* Сетка характеристик */}
               <div className="grid grid-cols-2 gap-4 border-t border-[#262626] pt-6 mb-6">
                 <div className="bg-[#141414] border border-[#262626] p-4 rounded-[10px] flex flex-col">
-                  <span className="text-[#7E7E81] text-xs font-light">Total Papers</span>
-                  <span className="text-white text-base lg:text-lg font-semibold mt-1">50+</span>
+                  <span className="text-[#7E7E81] text-xs font-light">Total Whitepapers</span>
+                  <span className="text-white text-base lg:text-lg font-semibold mt-1">Over 50+</span>
                 </div>
                 <div className="bg-[#141414] border border-[#262626] p-4 rounded-[10px] flex flex-col">
                   <span className="text-[#7E7E81] text-xs font-light">Download Format</span>
-                  <span className="text-white text-base lg:text-lg font-semibold mt-1">PDF</span>
+                  <span className="text-white text-base lg:text-lg font-semibold mt-1">PDF format</span>
                 </div>
               </div>
 
-              {/* Дополнительный текст и кнопка */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <span className="text-[#7E7E81] text-xs sm:text-sm font-light">
-                  Download and read on any device
+                  Whitepapers are authored by subject-matter experts with an average of 20 years of experience
                 </span>
-                <button className="inline-flex items-center gap-2 bg-[#141414] border border-[#262626] px-4 py-2.5 rounded-[8px] text-[#98989A] hover:text-white transition-colors text-xs font-medium cursor-pointer group">
-                  <span>Explore Whitepapers</span>
+                <button className="inline-flex items-center gap-2 bg-[#141414] border border-[#262626] px-4 py-2.5 rounded-[8px] text-[#98989A] hover:text-white transition-colors text-xs font-medium cursor-pointer group flex-shrink-0">
+                  <span>Preview</span>
                   <ArrowUpRight size={14} className="text-[#FFD11A] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </button>
               </div>
