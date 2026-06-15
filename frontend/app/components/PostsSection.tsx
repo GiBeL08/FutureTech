@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, MessageCircle, Share2, ArrowUpRight, ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import Link from 'next/link';
@@ -19,6 +19,25 @@ export default function PostsSection({ initialPosts }: Props) {
   const [direction, setDirection] = useState(0);
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
   const [sharedPosts, setSharedPosts] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    if (!userStr) return;
+    try {
+      const user = JSON.parse(userStr);
+      const userId = user.id;
+      if (!userId) return;
+
+      const alreadyLiked = new Set<string>();
+      initialPosts.forEach((post) => {
+        const hasLiked = post.likes?.some((like: any) => like.authorId === userId);
+        if (hasLiked) alreadyLiked.add(post.id);
+      });
+      setLikedPosts(alreadyLiked);
+    } catch {
+      // не авторизован
+    }
+  }, [initialPosts]);
 
   const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
   const visiblePosts = posts.slice(currentIndex * POSTS_PER_PAGE, currentIndex * POSTS_PER_PAGE + POSTS_PER_PAGE);
@@ -76,7 +95,6 @@ export default function PostsSection({ initialPosts }: Props) {
       );
       const url = `${window.location.origin}/posts/${postId}`;
       await navigator.clipboard.writeText(url);
-      // Reset share icon after 2 seconds
       setTimeout(() => {
         setSharedPosts((prev) => {
           const next = new Set(prev);
@@ -100,7 +118,6 @@ export default function PostsSection({ initialPosts }: Props) {
   return (
     <section className="bg-[#141414] py-16 sm:py-24 border-b border-[#262626]">
       <div className="max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-20">
-        {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12">
           <div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-white mb-4">
@@ -118,7 +135,6 @@ export default function PostsSection({ initialPosts }: Props) {
           </Link>
         </div>
 
-        {/* Slider */}
         <div className="relative overflow-hidden">
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
@@ -161,11 +177,7 @@ export default function PostsSection({ initialPosts }: Props) {
                       <div className="flex items-center gap-3 mb-4">
                         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center overflow-hidden">
                           {post.author.avatar ? (
-                            <img
-                              src={post.author.avatar}
-                              alt={post.author.name || 'User'}
-                              className="w-full h-full object-cover"
-                            />
+                            <img src={post.author.avatar} alt={post.author.name || 'User'} className="w-full h-full object-cover" />
                           ) : (
                             <span className="text-black text-xs font-bold">
                               {(post.author.name || 'U')[0].toUpperCase()}
@@ -173,12 +185,8 @@ export default function PostsSection({ initialPosts }: Props) {
                           )}
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-white text-sm font-medium">
-                            {post.author.name || 'Anonymous'}
-                          </span>
-                          <span className="text-[#98989A] text-xs">
-                            {new Date(post.createdAt).toLocaleDateString()}
-                          </span>
+                          <span className="text-white text-sm font-medium">{post.author.name || 'Anonymous'}</span>
+                          <span className="text-[#98989A] text-xs">{new Date(post.createdAt).toLocaleDateString()}</span>
                         </div>
                       </div>
 
@@ -191,7 +199,6 @@ export default function PostsSection({ initialPosts }: Props) {
 
                       <div className="mt-6 pt-4 border-t border-[#262626] flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                          {/* Like button */}
                           <button
                             onClick={() => handleLike(post.id)}
                             className="flex items-center gap-1.5 transition-all duration-200 group"
@@ -210,29 +217,22 @@ export default function PostsSection({ initialPosts }: Props) {
                                 }`}
                               />
                             </motion.div>
-                            <span
-                              className={`text-sm transition-colors duration-200 ${
-                                isLiked ? 'text-red-500' : 'text-[#98989A] group-hover:text-red-400'
-                              }`}
-                            >
+                            <span className={`text-sm transition-colors duration-200 ${
+                              isLiked ? 'text-red-500' : 'text-[#98989A] group-hover:text-red-400'
+                            }`}>
                               {post.likesCount || 0}
                             </span>
                           </button>
 
-                          {/* Comments button */}
                           <Link
                             href={`/posts/${post.id}#comments`}
                             className="flex items-center gap-1.5 text-[#98989A] hover:text-[#60A5FA] transition-colors duration-200 group"
                           >
-                            <MessageCircle
-                              size={18}
-                              className="group-hover:fill-[#60A5FA]/20 transition-all duration-200"
-                            />
+                            <MessageCircle size={18} className="group-hover:fill-[#60A5FA]/20 transition-all duration-200" />
                             <span className="text-sm">{post.commentsCount || 0}</span>
                           </Link>
                         </div>
 
-                        {/* Share button */}
                         <button
                           onClick={() => handleShare(post.id)}
                           className={`flex items-center gap-1.5 transition-all duration-200 group ${
@@ -247,15 +247,10 @@ export default function PostsSection({ initialPosts }: Props) {
                             {isShared ? (
                               <Check size={18} className="text-green-500" />
                             ) : (
-                              <Share2
-                                size={18}
-                                className="group-hover:text-[#FFD700] transition-colors duration-200"
-                              />
+                              <Share2 size={18} className="group-hover:text-[#FFD700] transition-colors duration-200" />
                             )}
                           </motion.div>
-                          <span className="text-sm">
-                            {isShared ? 'Copied!' : post.shares || 0}
-                          </span>
+                          <span className="text-sm">{isShared ? 'Copied!' : post.shares || 0}</span>
                         </button>
                       </div>
                     </div>
@@ -266,7 +261,6 @@ export default function PostsSection({ initialPosts }: Props) {
           </AnimatePresence>
         </div>
 
-        {/* Controls */}
         {totalPages > 1 && (
           <div className="flex items-center justify-center gap-4 mt-10">
             <button
@@ -277,7 +271,6 @@ export default function PostsSection({ initialPosts }: Props) {
               <ChevronLeft size={20} />
             </button>
 
-            {/* Dots */}
             <div className="flex items-center gap-2">
               {Array.from({ length: totalPages }).map((_, i) => (
                 <button

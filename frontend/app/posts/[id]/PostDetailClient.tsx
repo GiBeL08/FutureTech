@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, MessageCircle, Share2, ArrowLeft, Check } from 'lucide-react';
 import Link from 'next/link';
@@ -17,6 +17,21 @@ export default function PostDetailClient({ initialPost }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [isShared, setIsShared] = useState(false);
+
+  // При загрузке проверяем, лайкнул ли уже текущий пользователь этот пост
+  useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    if (!userStr) return;
+    try {
+      const user = JSON.parse(userStr);
+      const userId = user.id;
+      if (!userId) return;
+      const hasLiked = initialPost.likes?.some((like: any) => like.authorId === userId);
+      setIsLiked(!!hasLiked);
+    } catch {
+      // не авторизован
+    }
+  }, [initialPost]);
 
   const handleLike = async () => {
     const token = localStorage.getItem('token');
@@ -117,9 +132,7 @@ export default function PostDetailClient({ initialPost }: Props) {
             </div>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
-            {post.title}
-          </h1>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">{post.title}</h1>
 
           <div className="prose prose-invert max-w-none mb-12 text-[#E0E0E0] whitespace-pre-wrap">
             {post.content}
@@ -146,11 +159,9 @@ export default function PostDetailClient({ initialPost }: Props) {
                   }`}
                 />
               </motion.div>
-              <span
-                className={`text-lg transition-colors duration-200 ${
-                  isLiked ? 'text-red-500' : 'text-[#98989A] group-hover:text-red-400'
-                }`}
-              >
+              <span className={`text-lg transition-colors duration-200 ${
+                isLiked ? 'text-red-500' : 'text-[#98989A] group-hover:text-red-400'
+              }`}>
                 {post.likesCount || 0}
               </span>
             </button>
@@ -160,10 +171,7 @@ export default function PostDetailClient({ initialPost }: Props) {
               href="#comments"
               className="flex items-center gap-2 text-[#98989A] hover:text-[#60A5FA] transition-colors duration-200 group"
             >
-              <MessageCircle
-                size={24}
-                className="group-hover:fill-[#60A5FA]/20 transition-all duration-200"
-              />
+              <MessageCircle size={24} className="group-hover:fill-[#60A5FA]/20 transition-all duration-200" />
               <span className="text-lg">{post.commentsCount || 0}</span>
             </a>
 

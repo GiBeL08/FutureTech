@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { verifyToken } from '@/lib/auth';
-
 const prisma = new PrismaClient();
-
 function corsHeaders() {
   return {
     'Access-Control-Allow-Origin': '*',
@@ -11,11 +9,9 @@ function corsHeaders() {
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   };
 }
-
 export async function OPTIONS() {
   return new NextResponse(null, { headers: corsHeaders() });
 }
-
 // GET current user profile
 export async function GET(request: NextRequest) {
   try {
@@ -26,17 +22,14 @@ export async function GET(request: NextRequest) {
         { status: 401, headers: corsHeaders() }
       );
     }
-
     const token = authHeader.substring(7);
     const decoded = verifyToken(token);
-
     if (!decoded) {
       return NextResponse.json(
         { error: 'Invalid token' },
         { status: 401, headers: corsHeaders() }
       );
     }
-
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
       select: {
@@ -46,19 +39,24 @@ export async function GET(request: NextRequest) {
         avatar: true,
         bio: true,
         role: true,
+        createdAt: true,
         posts: {
           select: {
             id: true,
             title: true,
             content: true,
             image: true,
+            shares: true,
             createdAt: true,
+            likes: true,
+            comments: {
+              select: { id: true },
+            },
           },
           orderBy: { createdAt: 'desc' },
         },
       },
     });
-
     if (!user) {
       return NextResponse.json(
         { error: 'User not found' },
@@ -67,7 +65,16 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { data: user },
+      {
+        data: {
+          ...user,
+          posts: user.posts.map((post) => ({
+            ...post,
+            likesCount: post.likes.length,
+            commentsCount: post.comments.length,
+          })),
+        },
+      },
       { headers: corsHeaders() }
     );
   } catch (error) {
@@ -78,7 +85,6 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-
 // PUT update user profile
 export async function PUT(request: NextRequest) {
   try {
@@ -89,19 +95,15 @@ export async function PUT(request: NextRequest) {
         { status: 401, headers: corsHeaders() }
       );
     }
-
     const token = authHeader.substring(7);
     const decoded = verifyToken(token);
-
     if (!decoded) {
       return NextResponse.json(
         { error: 'Invalid token' },
         { status: 401, headers: corsHeaders() }
       );
     }
-
     const { name, avatar, bio } = await request.json();
-
     const user = await prisma.user.update({
       where: { id: decoded.userId },
       data: {
@@ -118,7 +120,6 @@ export async function PUT(request: NextRequest) {
         role: true,
       },
     });
-
     return NextResponse.json(
       { data: user },
       { headers: corsHeaders() }

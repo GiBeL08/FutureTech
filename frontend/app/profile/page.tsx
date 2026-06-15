@@ -4,9 +4,9 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Heart, MessageCircle, Trash2, Plus, LogOut,
-  Camera, User, Mail, FileText, Calendar,
+  Camera, User, FileText, Calendar,
   Edit3, X, Check, Image, AlignLeft, Type,
-  Shield, ChevronRight
+  Shield, ChevronRight, Share2
 } from 'lucide-react';
 import { useAuth } from '../components/AuthContext';
 
@@ -23,7 +23,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [postStep, setPostStep] = useState<1 | 2>(1);
-  const [activeTab, setActiveTab] = useState<'posts' | 'info'>('posts');
+  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
 
   const [editForm, setEditForm] = useState({ name: '', avatar: '', bio: '' });
   const [postForm, setPostForm] = useState({ title: '', content: '', image: '' });
@@ -97,6 +97,33 @@ export default function ProfilePage() {
     await fetchProfile(token);
   };
 
+  const handleLike = async (postId: string) => {
+    if (!token) return;
+    try {
+      const res = await fetch(`${API_URL}/posts/${postId}/like`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      const isNowLiked = data.liked;
+      setLikedPosts((prev) => {
+        const next = new Set(prev);
+        isNowLiked ? next.add(postId) : next.delete(postId);
+        return next;
+      });
+      setProfile((prev: any) => ({
+        ...prev,
+        posts: prev.posts.map((p: any) =>
+          p.id === postId
+            ? { ...p, likesCount: isNowLiked ? (p.likesCount ?? 0) + 1 : (p.likesCount ?? 1) - 1 }
+            : p
+        ),
+      }));
+    } catch (error) {
+      console.error('Error toggling like:', error);
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -118,6 +145,10 @@ export default function ProfilePage() {
 
   const initial = profile.name?.[0]?.toUpperCase() || 'U';
 
+  const totalLikes = profile.posts?.reduce((acc: number, p: any) => acc + (p.likesCount ?? 0), 0) ?? 0;
+  const totalComments = profile.posts?.reduce((acc: number, p: any) => acc + (p.commentsCount ?? 0), 0) ?? 0;
+  const totalShares = profile.posts?.reduce((acc: number, p: any) => acc + (p.shares ?? 0), 0) ?? 0;
+
   return (
     <div className="min-h-screen bg-[#0F0F0F] text-white">
       <div className="max-w-3xl mx-auto px-4 py-10">
@@ -126,15 +157,15 @@ export default function ProfilePage() {
         <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-2xl overflow-hidden mb-6">
 
           {/* Баннер */}
-            <div className="h-24 relative overflow-hidden" style={{ background: '#111' }}>
-              <div className="absolute inset-0" style={{
-                backgroundImage: 'radial-gradient(ellipse 60% 80% at 15% 50%, rgba(255,215,0,0.12) 0%, transparent 70%)',
-              }} />
-              <div className="absolute inset-0" style={{
-                backgroundImage: 'radial-gradient(ellipse 40% 60% at 85% 50%, rgba(255,215,0,0.06) 0%, transparent 70%)',
-              }} />
-              <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#FFD700]/20 to-transparent" />
-            </div>
+          <div className="h-24 relative overflow-hidden" style={{ background: '#111' }}>
+            <div className="absolute inset-0" style={{
+              backgroundImage: 'radial-gradient(ellipse 60% 80% at 15% 50%, rgba(255,215,0,0.12) 0%, transparent 70%)',
+            }} />
+            <div className="absolute inset-0" style={{
+              backgroundImage: 'radial-gradient(ellipse 40% 60% at 85% 50%, rgba(255,215,0,0.06) 0%, transparent 70%)',
+            }} />
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#FFD700]/20 to-transparent" />
+          </div>
 
           <div className="px-6 pb-6">
             {/* Аватар */}
@@ -150,7 +181,6 @@ export default function ProfilePage() {
                 <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-[#1A1A1A]" />
               </div>
 
-              {/* Кнопки справа */}
               <div className="flex items-center gap-2 mt-2">
                 <button
                   onClick={() => setIsEditing(!isEditing)}
@@ -194,10 +224,18 @@ export default function ProfilePage() {
                 </div>
                 <div className="w-px bg-[#2A2A2A]" />
                 <div className="text-center">
-                  <p className="text-lg font-bold text-white">
-                    {profile.posts?.reduce((acc: number, p: any) => acc + (p.likesCount ?? 0), 0) ?? 0}
-                  </p>
+                  <p className="text-lg font-bold text-white">{totalLikes}</p>
                   <p className="text-xs text-gray-500">Лайков</p>
+                </div>
+                <div className="w-px bg-[#2A2A2A]" />
+                <div className="text-center">
+                  <p className="text-lg font-bold text-white">{totalComments}</p>
+                  <p className="text-xs text-gray-500">Комментариев</p>
+                </div>
+                <div className="w-px bg-[#2A2A2A]" />
+                <div className="text-center">
+                  <p className="text-lg font-bold text-white">{totalShares}</p>
+                  <p className="text-xs text-gray-500">Репостов</p>
                 </div>
                 <div className="w-px bg-[#2A2A2A]" />
                 <div className="text-center">
@@ -254,10 +292,9 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* ── Создание поста (двухшаговый) ── */}
+        {/* ── Создание поста ── */}
         {isCreatingPost ? (
           <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-2xl overflow-hidden mb-6">
-            {/* Заголовок */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-[#2A2A2A]">
               <div className="flex items-center gap-3">
                 <span className="text-sm font-medium text-white">Новый пост</span>
@@ -319,21 +356,16 @@ export default function ProfilePage() {
                       className="w-full px-4 py-3 bg-[#111] border border-[#333] rounded-xl text-white text-sm placeholder-gray-600 focus:outline-none focus:border-[#FFD700]/50"
                     />
                   </div>
-
-                  {/* Превью */}
                   {postForm.image && (
                     <div className="rounded-xl overflow-hidden border border-[#333]">
                       <img src={postForm.image} alt="preview" className="w-full h-40 object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />
                     </div>
                   )}
-
-                  {/* Превью поста */}
                   <div className="bg-[#111] border border-[#2A2A2A] rounded-xl p-4">
                     <p className="text-xs text-gray-500 mb-2">Предпросмотр</p>
                     <h3 className="font-bold text-white mb-1">{postForm.title}</h3>
                     <p className="text-gray-400 text-sm line-clamp-3">{postForm.content}</p>
                   </div>
-
                   <div className="flex gap-2">
                     <button type="button" onClick={() => setPostStep(1)}
                       className="px-4 py-2.5 border border-[#333] text-gray-400 hover:text-white rounded-xl text-sm transition-colors">
@@ -364,37 +396,67 @@ export default function ProfilePage() {
             Посты · {profile.posts?.length ?? 0}
           </h2>
 
-          {profile.posts?.length > 0 ? profile.posts.map((post: any) => (
-            <div key={post.id} className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-2xl overflow-hidden hover:border-[#333] transition-colors group">
-              {post.image && (
-                <img src={post.image} alt={post.title} className="w-full h-48 object-cover" />
-              )}
-              <div className="p-5">
-                <div className="flex items-start justify-between mb-2">
-                  <h3 className="font-bold text-white text-lg leading-tight">{post.title}</h3>
-                  <button onClick={() => handleDeletePost(post.id)}
-                    className="opacity-0 group-hover:opacity-100 p-1.5 text-gray-600 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all ml-2 shrink-0">
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-                <p className="text-gray-400 text-sm leading-relaxed line-clamp-3 mb-4">{post.content}</p>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4 text-gray-600 text-sm">
-                    <span className="flex items-center gap-1.5 hover:text-red-400 transition-colors cursor-pointer">
-                      <Heart size={14} /> {post.likesCount ?? 0}
-                    </span>
-                    <span className="flex items-center gap-1.5 hover:text-blue-400 transition-colors cursor-pointer">
-                      <MessageCircle size={14} /> {post.commentsCount ?? 0}
+          {profile.posts?.length > 0 ? profile.posts.map((post: any) => {
+            const isLiked = likedPosts.has(post.id);
+            return (
+              <div key={post.id} className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-2xl overflow-hidden hover:border-[#333] transition-colors group">
+                {post.image && (
+                  <img src={post.image} alt={post.title} className="w-full h-48 object-cover" />
+                )}
+                <div className="p-5">
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="font-bold text-white text-lg leading-tight">{post.title}</h3>
+                    <button onClick={() => handleDeletePost(post.id)}
+                      className="opacity-0 group-hover:opacity-100 p-1.5 text-gray-600 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all ml-2 shrink-0">
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                  <p className="text-gray-400 text-sm leading-relaxed line-clamp-3 mb-4">{post.content}</p>
+
+                  <div className="flex items-center justify-between pt-3 border-t border-[#2A2A2A]">
+                    <div className="flex items-center gap-4 text-sm">
+                      {/* Like */}
+                      <button
+                        onClick={() => handleLike(post.id)}
+                        className="flex items-center gap-1.5 transition-colors duration-200 group/like"
+                      >
+                        <Heart
+                          size={15}
+                          className={`transition-colors duration-200 ${
+                            isLiked
+                              ? 'text-red-500 fill-red-500'
+                              : 'text-gray-600 group-hover/like:text-red-400'
+                          }`}
+                        />
+                        <span className={`transition-colors duration-200 ${
+                          isLiked ? 'text-red-500' : 'text-gray-600 group-hover/like:text-red-400'
+                        }`}>
+                          {post.likesCount ?? 0}
+                        </span>
+                      </button>
+
+                      {/* Comments */}
+                      <span className="flex items-center gap-1.5 text-gray-600 hover:text-blue-400 transition-colors cursor-pointer">
+                        <MessageCircle size={15} />
+                        {post.commentsCount ?? 0}
+                      </span>
+
+                      {/* Shares */}
+                      <span className="flex items-center gap-1.5 text-gray-600 hover:text-[#FFD700] transition-colors cursor-pointer">
+                        <Share2 size={15} />
+                        {post.shares ?? 0}
+                      </span>
+                    </div>
+
+                    <span className="flex items-center gap-1 text-xs text-gray-600">
+                      <Calendar size={11} />
+                      {new Date(post.createdAt).toLocaleDateString('ru')}
                     </span>
                   </div>
-                  <span className="flex items-center gap-1 text-xs text-gray-600">
-                    <Calendar size={11} />
-                    {new Date(post.createdAt).toLocaleDateString('ru')}
-                  </span>
                 </div>
               </div>
-            </div>
-          )) : (
+            );
+          }) : (
             <div className="flex flex-col items-center justify-center py-16 text-gray-600">
               <FileText size={32} className="mb-3 opacity-30" />
               <p className="text-sm">Постов пока нет</p>
