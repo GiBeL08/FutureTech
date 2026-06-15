@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",        // ✅ Изменено с "node"
+    "target": "ES2021",
+    "rootDir": "./src",                // ✅ Убедись, что это правильный путь
+    "outDir": "./dist",
+    "ignoreDeprecations": "5.0",       // ✅ Или добавь эту строку, если нужна baseUrl
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,           // ✅ Добавь это для лучшей совместимости
+    "sourceMap": true,
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "strictBindCallApply": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
