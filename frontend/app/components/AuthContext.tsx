@@ -6,7 +6,7 @@ import {
   useEffect,
   useState,
 } from 'react'
-import { User } from '../lib/user'
+import { User } from '../lib/User'
 
 type AuthContextType = {
   isLoggedIn: boolean

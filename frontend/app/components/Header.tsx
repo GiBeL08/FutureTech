@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Button from './Button';
 import { useAuth } from './AuthContext';
-import { User } from '../lib/user';
+import { User } from '../lib/User';
 
 export default function Header() {
   const pathname = usePathname();
