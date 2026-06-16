@@ -1,9 +1,8 @@
 import "./globals.css";
 import Header from "./components/Header";
 import TopBar from "./components/TopBar";
-import Footer from './components/Footer'; 
-// Временно комментируем провайдер авторизации, чтобы устранить конфликт fetch-потоков
-// import { AuthProvider } from "./components/AuthContext";
+import Footer from './components/Footer';
+import { AuthProvider } from "./components/AuthContext";
 
 export const metadata = {
   title: "FutureTech AI",
@@ -18,17 +17,14 @@ export default function RootLayout({
   return (
     <html lang="en" className="bg-[#141414]">
       <body className="bg-[#141414] text-white antialiased min-h-screen flex flex-col m-0 p-0">
-        {/* Временно убираем AuthProvider */}
-        {/* <AuthProvider> */}
+        <AuthProvider>
           <TopBar />
           <Header />
-
           <main className="flex-grow w-full">
             {children}
           </main>
-
-          <Footer /> 
-        {/* </AuthProvider> */}
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );
