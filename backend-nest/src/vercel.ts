@@ -1,32 +1,45 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import { NestFactory } from '@nestjs/core';
+import { ExpressAdapter } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
-let cachedServer: any;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const express = require('express');
+
+const server = express();
+let isInitialized = false;
+
+async function bootstrap() {
+  if (isInitialized) return server;
+
+  const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
+
+  app.setGlobalPrefix('api');
+  app.enableCors({
+    origin: [
+      'https://future-techfrontend.vercel.app',
+      /https:\/\/future-techfrontend.*\.vercel\.app$/,
+    ],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type, Authorization',
+    credentials: true,
+  });
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+    }),
+  );
+  app.useGlobalFilters(new HttpExceptionFilter());
+
+  await app.init();
+  isInitialized = true;
+  return server;
+}
 
 export default async function handler(req: any, res: any) {
-  if (!cachedServer) {
-    const app = await NestFactory.create(AppModule);
-    
-    // Дублируем абсолютно все настройки из твоего main.ts
-    app.setGlobalPrefix('api');
-    app.enableCors({
-      origin: process.env.FRONTEND_URL || '*',
-      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-      allowedHeaders: 'Content-Type, Authorization',
-    });
-    app.useGlobalPipes(
-      new ValidationPipe({
-        whitelist: true,
-        transform: true,
-      }),
-    );
-    app.useGlobalFilters(new HttpExceptionFilter());
-
-    await app.init();
-    cachedServer = app.getHttpAdapter().getInstance();
-  }
-  
-  return cachedServer(req, res);
+  const app = await bootstrap();
+  app(req, res);
 }
