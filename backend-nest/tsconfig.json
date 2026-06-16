@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "ignoreDeprecations": "6.0",
+    "module": "Node16",
     "target": "ES2021",
     "lib": ["ES2021"],
-    "moduleResolution": "node",
+    "moduleResolution": "Node16",
     "rootDir": "./src",
     "outDir": "./dist",
     "baseUrl": "./",
