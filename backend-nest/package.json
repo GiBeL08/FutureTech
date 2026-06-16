@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "tsc",
+    "build": "nest build",
     "start": "node dist/main",
-    "start:dev": "tsc && node --watch dist/main",
+    "dev": "nest start --watch",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "postinstall": "prisma generate"
+
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

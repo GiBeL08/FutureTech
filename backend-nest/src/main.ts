@@ -25,4 +25,7 @@ async function bootstrap() {
   console.log(`FutureTech NestJS API running on http://localhost:${port}/api`);
 }
 
-bootstrap();
+bootstrap().catch((err) => {
+  console.error('Failed to start application:', err);
+  process.exit(1);
+});
