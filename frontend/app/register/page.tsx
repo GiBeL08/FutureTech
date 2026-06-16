@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '../components/AuthContext';
 
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'https://future-techbackend.vercel.app/api';
+
 export default function RegisterPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -35,7 +38,7 @@ export default function RegisterPage() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
+        `${API_URL}/auth/register`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
