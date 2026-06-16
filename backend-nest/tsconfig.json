@@ -1,10 +1,9 @@
 {
   "compilerOptions": {
-    "ignoreDeprecations": "6.0",
-    "module": "Node16",
+    "module": "NodeNext",
     "target": "ES2021",
     "lib": ["ES2021"],
-    "moduleResolution": "Node16",
+    "moduleResolution": "NodeNext",
     "rootDir": "./src",
     "outDir": "./dist",
     "baseUrl": "./",
