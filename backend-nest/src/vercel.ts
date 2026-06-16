@@ -11,6 +11,21 @@ const express = require('express');
 const server = express();
 let isInitialized = false;
 
+server.use((req: any, res: any, next: any) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
+  res.header(
+    'Access-Control-Allow-Headers',
+    req.header('Access-Control-Request-Headers') || 'Content-Type, Authorization, Accept',
+  );
+
+  if (req.method === 'OPTIONS') {
+    return res.status(204).send();
+  }
+
+  return next();
+});
+
 async function bootstrap() {
   if (isInitialized) return server;
 
