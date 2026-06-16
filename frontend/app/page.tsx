@@ -6,47 +6,55 @@ import TestimonialsSection from './components/TestimonialsSection';
 import CTASection from './components/CTASection';
 import PostsSection from './components/PostsSection';
 
-// Универсальная функция для отправки запросов к твоему NestJS бэкенду
-async function fetchData(endpoint: string) {
-  // Берем адрес бэкенда из переменной окружения Vercel, либо локальный для разработки
+// Изолированная функция запроса
+async function fetchDataSafe(endpoint: string) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+  const fullUrl = `${apiUrl}/${endpoint}`;
+  
+  console.log(`[API FETCH START]: Запрос на ${fullUrl}`);
   
   try {
-    const res = await fetch(`${apiUrl}/${endpoint}`, {
+    const res = await fetch(fullUrl, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
-      // Отключаем жесткое кэширование, чтобы данные обновлялись при перезагрузке
-      cache: 'no-store' 
+      cache: 'no-store'
     });
 
     if (!res.ok) {
-      console.error(`Ошибка при запросе к /api/${endpoint}: Статус ${res.status}`);
+      console.error(`[API FETCH ERROR]: ${endpoint} вернул статус ${res.status}`);
       return [];
     }
 
-    const json = await res.json();
-    
-    // Если твой NestJS возвращает данные завернутыми в { data: [...] }, достаем массив.
-    // Иначе возвращаем результат как есть.
+    // Читаем текст, чтобы избежать преждевременного закрытия стрима body в Next.js
+    const textData = await res.text();
+    if (!textData) {
+      console.log(`[API FETCH EMPTY]: ${endpoint} вернул пустой ответ`);
+      return [];
+    }
+
+    const json = JSON.parse(textData);
+    console.log(`[API FETCH SUCCESS]: Данные для ${endpoint} успешно получены`);
     return json.data || json;
   } catch (error) {
-    console.error(`Не удалось достучаться до эндпоинта /api/${endpoint}:`, error);
-    return []; // Возвращаем пустой массив, чтобы страница не падала целиком
+    console.error(`[API FETCH FAILED]: Ошибка запроса к ${endpoint}:`, error);
+    return [];
   }
 }
 
 export default async function Home() {
-  // Делаем параллельные запросы ко всем нужным модулям NestJS бэкенда
-  const [stats, blogs, testimonials, posts] = await Promise.all([
-    fetchData('stats'),        // Запрос к StatsModule
-    fetchData('blog'),         // Запрос к BlogModule (если роут во множественном числе, исправь на 'blogs')
-    fetchData('testimonials'), // Запрос к TestimonialsModule
-    fetchData('posts'),        // Запрос к PostsModule (который уже успешно проверили)
-  ]);
+  console.log('[HOME PAGE]: Начало рендеринга страницы...');
 
-  // Форматируем данные статистики для компонента Hero
+  // Избавляемся от Promise.all, запрашиваем строго по очереди, 
+  // чтобы Next.js не путал входящие стримы данных (Body)
+  const stats = await fetchDataSafe('stats');
+  const blogs = await fetchDataSafe('blog');
+  const testimonials = await fetchDataSafe('testimonials');
+  const posts = await fetchDataSafe('posts');
+
+  console.log('[HOME PAGE]: Все запросы завершены.');
+
   const heroStats = Array.isArray(stats)
     ? stats.map((s: any) => ({ val: s.value, label: s.label }))
     : [];
