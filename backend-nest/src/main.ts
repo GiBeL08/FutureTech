@@ -7,10 +7,17 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('api');
-  app.enableCors({
-    origin: process.env.FRONTEND_URL || '*',
+app.enableCors({
+    // Разрешаем твой фронтенд на Vercel и localhost для тестов
+    origin: [
+      'https://future-techfrontend.vercel.app', 
+      'http://localhost:3000'
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: 'Content-Type, Authorization',
+    allowedHeaders: 'Content-Type, Authorization, Accept',
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204, // Автоматический успешный статус для OPTIONS
   });
   app.useGlobalPipes(
     new ValidationPipe({
