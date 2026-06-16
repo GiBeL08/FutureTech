@@ -18,10 +18,7 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
   app.enableCors({
-    origin: [
-      'https://future-techfrontend.vercel.app',
-      /https:\/\/future-techfrontend.*\.vercel\.app$/,
-    ],
+    origin: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type, Authorization',
     credentials: true,
