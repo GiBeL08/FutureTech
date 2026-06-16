@@ -65,7 +65,7 @@ export default function Header() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`px-[24px] h-[48px] flex items-center justify-center rounded-[8px] text-base transition-all duration-300 ease-out border ${
+                  className={`px-[24px] h-[48px] flex items-center justify-center rounded-[8px] text-base transition-all duration-300 ease-outborder ${
                     isActive
                       ? 'bg-[#141414] text-white font-medium border-[#333333] shadow-sm'
                       : 'text-[#7E7E81] border-transparent hover:text-white hover:bg-white/5'

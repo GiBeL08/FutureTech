@@ -11,7 +11,6 @@ import {
   Mic,
   Mail,
   Settings,
-  LogOut,
   PanelLeftClose,
   PanelLeftOpen,
 } from 'lucide-react';
@@ -107,20 +106,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             );
           })}
         </nav>
-
-        {/* Logout */}
-        <div className="p-2 border-t border-[#393937]">
-          <button
-            onClick={() => { localStorage.clear(); router.push('/login'); }}
-            title={collapsed ? 'Выйти' : undefined}
-            className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-[#DC0416] rounded-lg transition-colors duration-300 ease-in-out ${
-              collapsed ? 'justify-center' : 'justify-center'
-            }`}
-          >
-            <LogOut size={16} />
-            {!collapsed && <span>Выйти</span>}
-          </button>
-        </div>
       </aside>
 
       {/* Main content */}
@@ -129,4 +114,4 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </main>
     </div>
   );
-}
+} 
