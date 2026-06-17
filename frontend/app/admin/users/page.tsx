@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Users, FileText, Trash2, ShieldCheck, User } from 'lucide-react';
 
-const API = 'http://localhost:3001/api';
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
 export default function AdminUsers() {
   const [users, setUsers] = useState<any[]>([]);

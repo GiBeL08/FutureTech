@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Heart, MessageCircle, Trash2, FileText } from 'lucide-react';
 
-const API = 'http://localhost:3001/api';
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
 export default function AdminPosts() {
   const [posts, setPosts] = useState<any[]>([]);

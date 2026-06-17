@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Mail, Trash2, Reply, Phone, Clock, Inbox, User } from 'lucide-react';
 
-const API = 'http://localhost:3001/api';
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
 export default function AdminMessages() {
   const [messages, setMessages] = useState<any[]>([]);

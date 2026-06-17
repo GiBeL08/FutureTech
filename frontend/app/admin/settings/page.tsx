@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Save, Check, BarChart2, Mail, Calendar } from 'lucide-react';
 
-const API = 'http://localhost:3001/api';
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
 export default function AdminSettings() {
   const [stats, setStats] = useState<any[]>([]);
