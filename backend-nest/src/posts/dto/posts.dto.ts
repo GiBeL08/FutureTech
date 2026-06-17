@@ -19,3 +19,10 @@ export class CreateCommentDto {
   @MinLength(1)
   text!: string;
 }
+
+export class DeletePostDto {
+  @IsString()
+  id!: string;
+  @IsString()
+  authorId!: string;
+}
