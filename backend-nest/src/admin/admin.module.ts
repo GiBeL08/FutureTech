@@ -19,7 +19,7 @@ import { AdminService } from './admin.service';
   imports: [
     UsersModule,
     BlogModule,
-    PostsModule,
+    PostsModule, 
     NewsModule,
     StatsModule,
     NewslettersModule,
