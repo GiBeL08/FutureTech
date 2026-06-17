@@ -164,7 +164,7 @@ export default function Header() {
         )}
       </header>
 
-      <div className="h-[89px] lg:h-[88px]" />
+      <div className="h-0" />
     </>
   );
 }
