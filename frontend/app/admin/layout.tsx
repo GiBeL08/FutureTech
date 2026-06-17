@@ -65,7 +65,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside
         className={`${
           collapsed ? 'w-[60px]' : 'w-64'
-        } bg-[#141414] border-r border-[#393937] flex flex-col transition-all duration-300 ease-in-out pt-[89px] lg:pt-[88px]`}
+        } bg-[#141414] border-r border-[#393937] flex flex-col transition-all duration-300 ease-in-out pt-[70px] lg:pt-[70px]`}
       >
         {/* Header */}
         <div className={`p-4 border-b border-[#393937] flex items-center ${collapsed ? 'justify-center' : 'justify-between'}`}>
@@ -109,7 +109,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-auto pt-[89px] lg:pt-[88px]">
+      <main className="flex-1 overflow-auto pt-[70px] lg:pt-[70px]">
         {children}
       </main>
     </div>
