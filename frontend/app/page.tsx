@@ -6,6 +6,9 @@ import TestimonialsSection from './components/TestimonialsSection';
 import CTASection from './components/CTASection';
 import PostsSection from './components/PostsSection';
 
+// Переиндексировать каждые 60 секунд
+export const revalidate = 60;
+
 async function fetchDataSafe(endpoint: string) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
   const fullUrl = `${apiUrl}/${endpoint}`;
@@ -14,7 +17,7 @@ async function fetchDataSafe(endpoint: string) {
     const res = await fetch(fullUrl, {
       method: 'GET',
       headers: { 'Accept': 'application/json' },
-      cache: 'no-store',
+      next: { revalidate: 60 }, // ISR - Incremental Static Regeneration
     });
 
     if (!res.ok) {
