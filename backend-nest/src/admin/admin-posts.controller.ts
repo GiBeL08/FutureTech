@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param, UseGuards, Body } from '@nestjs/common';
+import { Controller, Delete, Get, UseGuards, Body } from '@nestjs/common';
 import { AdminGuard } from '../common/guards/admin.guard';
 import { PostsService } from '../posts/posts.service';
 import { DeletePostDto } from '../posts/dto/posts.dto';
@@ -17,6 +17,6 @@ export class AdminPostsController {
   @Delete()
   @UseGuards(AdminGuard)
   async delete(@Body() dto: DeletePostDto) {
-   await this.postsService.delete(dto.id, dto.authorId);
+    return await this.postsService.deleteByAdmin(dto.id);
   }
 }

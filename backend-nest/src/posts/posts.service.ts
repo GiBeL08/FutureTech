@@ -82,6 +82,7 @@ export class PostsService {
     return this.mapPost(post);
   }
 
+  // Обычное удаление пользователем своего поста
   async delete(id: string, authorId: string) {
     const post = await this.prisma.post.findUnique({ where: { id } });
     if (!post) {
@@ -89,6 +90,16 @@ export class PostsService {
     }
     if (post.authorId !== authorId) {
       throw new ForbiddenException('You can only delete your own posts');
+    }
+    await this.prisma.post.delete({ where: { id } });
+    return { success: true };
+  }
+
+  // Административное удаление (без проверки на автора)
+  async deleteByAdmin(id: string) {
+    const post = await this.prisma.post.findUnique({ where: { id } });
+    if (!post) {
+      throw new NotFoundException('Post not found');
     }
     await this.prisma.post.delete({ where: { id } });
     return { success: true };
