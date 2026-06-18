@@ -126,16 +126,6 @@ export default function AdminUsers() {
                     <td className="px-4 py-3 w-[25%]">
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => changeRole(u.id, u.role === 'admin' ? 'user' : 'admin')}
-                          title={u.role === 'admin' ? 'Снять права админа' : 'Сделать админом'}
-                          className="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border border-[#393937] text-gray-400 hover:text-white hover:border-[#FFD700]/40 hover:bg-[#FFD700]/5 transition-all"
-                        >
-                          {u.role === 'admin'
-                            ? <><User size={12} /> Снять</>
-                            : <><ShieldCheck size={12} /> Админ</>
-                          }
-                        </button>
-                        <button
                           onClick={() => deleteUser(u.id)}
                           className="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border border-[#393937] text-red-400 hover:text-red-300 hover:border-red-400/40 hover:bg-red-400/5 transition-all group-hover:opacity-100"
                         >
