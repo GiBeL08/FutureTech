@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Users, FileText, Trash2, ShieldCheck, User } from 'lucide-react';
+import { Users, FileText, Trash2 } from 'lucide-react';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
@@ -18,15 +18,6 @@ export default function AdminUsers() {
   };
 
   useEffect(() => { fetchUsers(); }, []);
-
-  const changeRole = async (id: string, role: string) => {
-    await fetch(`${API}/admin/users/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ role }),
-    });
-    fetchUsers();
-  };
 
   const deleteUser = async (id: string) => {
     if (!confirm('Удалить пользователя?')) return;
@@ -95,18 +86,15 @@ export default function AdminUsers() {
 
                     {/* Роль */}
                     <td className="px-4 py-3 w-[15%]">
-                      <select
-                        value={u.role}
-                        onChange={(e) => changeRole(u.id, e.target.value)}
-                        className={`text-xs rounded-full px-3 py-1 border outline-none cursor-pointer transition-colors ${
+                      <span
+                        className={`text-xs rounded-full px-3 py-1 inline-block ${
                           u.role === 'admin'
-                            ? 'bg-[#FFD700]/10 text-[#FFD700] border-[#FFD700]/30 hover:bg-[#FFD700]/20'
-                            : 'bg-[#2A2A2A] text-gray-300 border-[#393937] hover:bg-[#333]'
+                            ? 'bg-[#FFD700]/10 text-[#FFD700]'
+                            : 'bg-[#2A2A2A] text-gray-300'
                         }`}
                       >
-                        <option value="user">user</option>
-                        <option value="admin">admin</option>
-                      </select>
+                        {u.role}
+                      </span>
                     </td>
 
                     {/* Посты */}
@@ -124,15 +112,13 @@ export default function AdminUsers() {
 
                     {/* Действия */}
                     <td className="px-4 py-3 w-[25%]">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => deleteUser(u.id)}
-                          className="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border border-[#393937] text-red-400 hover:text-red-300 hover:border-red-400/40 hover:bg-red-400/5 transition-all group-hover:opacity-100"
-                        >
-                          <Trash2 size={12} />
-                          Удалить
-                        </button>
-                      </div>
+                      <button
+                        onClick={() => deleteUser(u.id)}
+                        className="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border border-[#393937] text-red-400 hover:text-red-300 hover:border-red-400/40 hover:bg-red-400/5 transition-all"
+                      >
+                        <Trash2 size={12} />
+                        Удалить
+                      </button>
                     </td>
 
                   </tr>
