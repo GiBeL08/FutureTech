@@ -9,14 +9,23 @@ type PageProps = {
 
 export default async function BlogPage({ params }: PageProps) {
   const { slug } = await params;
-  const [post, similarNews] = await Promise.all([getBlogById(slug), getSimilarNews()]);
 
-  if (!post) notFound();
+  if (!slug) {
+    notFound();
+  }
 
-  return (
-    <div className="bg-[#141414]">
-      <BlogOpenPage post={post} similarNews={similarNews} />
-      <CTASection />
-    </div>
-  );
+  try {
+    const [post, similarNews] = await Promise.all([getBlogById(slug), getSimilarNews()]);
+
+    if (!post) notFound();
+
+    return (
+      <div className="bg-[#141414]">
+        <BlogOpenPage post={post} similarNews={similarNews} />
+        <CTASection />
+      </div>
+    );
+  } catch (error) {
+    notFound();
+  }
 }

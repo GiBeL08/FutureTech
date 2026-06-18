@@ -1,22 +1,31 @@
 import { getNewsBySlug } from '@/lib/db';
+import { notFound } from 'next/navigation';
 
 type PageProps = {
-  params?: { id?: string };
+  params: Promise<{ id?: string }>;
 };
 
 export default async function NewsPage({ params }: PageProps) {
-  const id = params?.id;
+  const { id } = await params;
 
   if (!id) {
-    return <div className="text-white p-10">ID not found in URL</div>;
+    notFound();
   }
 
-  const news = await getNewsBySlug(id);
+  try {
+    const news = await getNewsBySlug(id);
 
-  return (
-    <div className="text-white p-10">
-      <h1>{news.title}</h1>
-      <p>{news.desc}</p>
-    </div>
-  );
+    if (!news) {
+      notFound();
+    }
+
+    return (
+      <div className="text-white p-10">
+        <h1>{news.title}</h1>
+        <p>{news.desc}</p>
+      </div>
+    );
+  } catch (error) {
+    notFound();
+  }
 }
