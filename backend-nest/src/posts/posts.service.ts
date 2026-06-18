@@ -82,15 +82,24 @@ export class PostsService {
     return this.mapPost(post);
   }
 
-  // Обычное удаление пользователем своего поста
-  async delete(id: string, authorId: string) {
+  // ✅ ОБНОВЛЕННЫЙ МЕТОД - теперь поддерживает админов
+  async delete(id: string, authorId: string, role?: string) {
     const post = await this.prisma.post.findUnique({ where: { id } });
     if (!post) {
       throw new NotFoundException('Post not found');
     }
+
+    // ✅ Админ может удалять любой пост
+    if (role === 'admin') {
+      await this.prisma.post.delete({ where: { id } });
+      return { success: true };
+    }
+
+    // Обычный пользователь - только свой пост
     if (post.authorId !== authorId) {
       throw new ForbiddenException('You can only delete your own posts');
     }
+
     await this.prisma.post.delete({ where: { id } });
     return { success: true };
   }

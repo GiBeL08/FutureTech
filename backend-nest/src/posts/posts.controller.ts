@@ -38,8 +38,9 @@ export class PostsController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
+  // ✅ ОБНОВЛЕННЫЙ МЕТОД - теперь передает роль в сервис
   delete(@Param('id') id: string, @CurrentUser() user: AuthUser) {
-    return this.postsService.delete(id, user.userId);
+    return this.postsService.delete(id, user.userId, user.role);
   }
 
   @Get(':id/comments')
