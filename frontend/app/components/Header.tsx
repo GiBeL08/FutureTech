@@ -116,7 +116,7 @@ export default function Header() {
           </button>
         </div>
 
-        {/* Мобильное меню с улучшенной плавной анимацией */}
+        {/* Мобильное меню */}
         {isMenuOpen && (
           <div className="absolute top-full left-0 w-full bg-[#1A1A1A] border-b border-[#262626] lg:hidden animate-in fade-in slide-in-from-top-2 duration-500 ease-in-out">
             <nav className="flex flex-col p-6 gap-4">

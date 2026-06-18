@@ -13,6 +13,7 @@ type AuthContextType = {
   user: User | null
   login: (user: User) => void
   logout: () => void
+  updateUser: (user: User) => void  // ✅ НОВОЕ
 }
 
 const AuthContext = createContext<AuthContextType | null>(
@@ -65,6 +66,15 @@ export function AuthProvider({
     )
   }
 
+  // ✅ НОВЫЙ МЕТОД - для обновления профиля (аватар, имя, etc)
+  const updateUser = (updatedUser: User) => {
+    setUser(updatedUser)
+    localStorage.setItem(
+      'user',
+      JSON.stringify(updatedUser)
+    )
+  }
+
   const logout = () => {
     setUser(null)
     setIsLoggedIn(false)
@@ -79,6 +89,7 @@ export function AuthProvider({
         user,
         login,
         logout,
+        updateUser,  // ✅ НОВОЕ
       }}
     >
       {children}
