@@ -14,7 +14,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { logout } = useAuth();
+  const { logout, updateUser } = useAuth(); // ✅ ДОБАВЛЕН updateUser
 
   const [profile, setProfile] = useState<any>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -63,6 +63,7 @@ export default function ProfilePage() {
       const data = await res.json();
       setProfile(data.data);
       localStorage.setItem('user', JSON.stringify(data.data));
+      updateUser(data.data); // ✅ ДОБАВЛЕНА ЭТА СТРОКА
       setIsEditing(false);
     } finally {
       setSaving(false);
